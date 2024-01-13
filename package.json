@@ -17,6 +17,5 @@
     "mongoose": "^8.0.3",
     "ms": "^2.1.3",
     "pretty-ms": "^8.0.0"
-  },
-  "type": "module"
+  }
 }
