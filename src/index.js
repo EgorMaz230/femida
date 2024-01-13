@@ -1,31 +1,23 @@
-import {
+const {
   Client,
   GatewayIntentBits,
   Guild,
   Routes,
   Events,
   Collection,
-} from "discord.js";
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { config } from "dotenv";
-import { REST } from "@discordjs/rest";
-import { commands } from "./commands/ping.js";
-// import { commands } from "./getAllFiles";
-
-// const fs = require("node:fs");
-// const path = require("node:path");
-
-//? import fs from "node:fs";
-//? import path from "node:path";
-//? import { fileURLToPath } from "url";
+} = require('discord.js');
+const { config } = require('dotenv');
+// const { REST } = require( "@discordjs/rest");
+const fs = require("node:fs");
+const path = require("node:path");
 
 config();
 
 const TOKEN = process.env.TOKEN;
-const CLIENT_ID = process.env.CLIENT_ID;
-const GUILD_ID = process.env.GUILD_ID;
+// const CLIENT_ID = process.env.CLIENT_ID;
+// const GUILD_ID = process.env.GUILD_ID;
 
-export const client = new Client({
+ const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
@@ -33,83 +25,52 @@ export const client = new Client({
   ],
 });
 
-const rest = new REST({ version: "10" }).setToken(TOKEN);
+// const rest = new REST({ version: "10" }).setToken(TOKEN);
 
-//? lala
+client.commands = new Collection();
 
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
+const foldersPath = path.join(__dirname, "commands");
+const commandFolders = fs.readdirSync(foldersPath);
 
-// client.commands = new Collection();
-
-// console.log(__dirname);
-// console.log(__filename);
-
-// const foldersPath = path.join("../", "commands");
-// const commandFolders = fs.readdirSync(foldersPath);
-
-// for (const folder of commandFolders) {
-//   const commandsPath = path.join(foldersPath, folder);
-//   const commandFiles = fs
-//     .readdirSync(commandsPath)
-//     .filter((file) => file.endsWith(".js"));
-//   for (const file of commandFiles) {
-//     const filePath = path.join(commandsPath, file);
-//     const command = require(filePath);
-//     // Set a new item in the Collection with the key as the command name and the value as the exported module
-//     if ("data" in command && "execute" in command) {
-//       client.commands.set(command.data.name, command);
-//     } else {
-//       console.log(
-//         `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
-//       );
-//     }
-//   }
-// }
-
-//? al;a
+for (const folder of commandFolders) {
+  const commandsPath = path.join(foldersPath, folder);
+  const commandFiles = fs
+    .readdirSync(commandsPath)
+    .filter((file) => file.endsWith(".js"));
+  for (const file of commandFiles) {
+    const filePath = path.join(commandsPath, file);
+    const command = require(filePath);
+    if ("data" in command && "execute" in command) {
+      client.commands.set(command.data.name, command);
+    } else {
+      console.log(
+        `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
+      );
+    }
+  }
+}
 
 client.on("ready", () => console.log("I am ready to use"));
 
-client.on(Events.InteractionCreate, (interaction) => {
-  console.log(interaction);
-  if (interaction.isChatInputCommand()) {
-    switch (interaction.commandName) {
-      case "ping":
-        interaction.reply({
-          content: "pong",
-        });
+client.on(Events.InteractionCreate, async (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
+ 
+  const command = interaction.client.commands.get(interaction.commandName);
 
-        return;
-
-      default:
-        break;
-    }
+  if (!command) {
+    console.error(`No command matching ${interaction.commandName} was found`);
   }
-  // interaction.reply({
-  //     content:
-  // })
-});
 
-client.on(Events.MessageCreate, (msg) => {
-  console.log(msg);
   try {
-    if (!msg.author.bot) {
-      msg.channel.send(msg.content);
-    }
-  } catch (e) {
-    console.log(e);
-  }
-});
-
-async function main() {
-  try {
-    await rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), {
-      body: commands,
-    });
-    client.login(TOKEN);
+    await command.execute(interaction);
   } catch (error) {
-    console.log(error);
-  }
-}
-main();
+    console.error(error);
+    if (interaction.replied || interaction.deferred) {
+      await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true})
+    } else {
+      await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true})
+    }
+  }}
+);
+
+client.login(TOKEN)
