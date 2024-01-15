@@ -5,10 +5,16 @@ const {
   Routes,
   Events,
   Collection,
+
 } = require("discord.js");
 const { config } = require("dotenv");
 const accrualPoints = require("./utils/messages.js");
 const getMembersInVoiceChanel = require("./utils/voicechanel.js");
+
+} = require('discord.js');
+const { config } = require('dotenv');
+const { default: mongoose } = require('mongoose');
+
 // const { REST } = require( "@discordjs/rest");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -53,7 +59,15 @@ for (const folder of commandFolders) {
   }
 }
 
-client.on("ready", () => console.log("I am ready to use"));
+client.on("ready", async () => {
+  console.log(`${client.user.tag} is online`);
+  try {
+    await mongoose.connect(process.env.MONGODB_URI)
+    console.log('Connected to DB');
+  } catch (error) {
+    console.log(`There was an error whil connecting to database ${error}`);
+  }
+});
 
 client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
@@ -94,4 +108,6 @@ client.on("ready", () => {
   console.log(voiceChannels);
 });
 
+
 client.login(TOKEN);
+
