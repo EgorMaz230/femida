@@ -5,8 +5,10 @@ const {
   Routes,
   Events,
   Collection,
-} = require('discord.js');
-const { config } = require('dotenv');
+} = require("discord.js");
+const { config } = require("dotenv");
+const accrualPoints = require("./utils/messages.js");
+const getMembersInVoiceChanel = require("./utils/voicechanel.js");
 // const { REST } = require( "@discordjs/rest");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -17,11 +19,12 @@ const TOKEN = process.env.TOKEN;
 // const CLIENT_ID = process.env.CLIENT_ID;
 // const GUILD_ID = process.env.GUILD_ID;
 
- const client = new Client({
+const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildVoiceStates,
   ],
 });
 
@@ -54,7 +57,7 @@ client.on("ready", () => console.log("I am ready to use"));
 
 client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
- 
+
   const command = interaction.client.commands.get(interaction.commandName);
 
   if (!command) {
@@ -66,11 +69,29 @@ client.on(Events.InteractionCreate, async (interaction) => {
   } catch (error) {
     console.error(error);
     if (interaction.replied || interaction.deferred) {
-      await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true})
+      await interaction.followUp({
+        content: "There was an error while executing this command!",
+        ephemeral: true,
+      });
     } else {
-      await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true})
+      await interaction.reply({
+        content: "There was an error while executing this command!",
+        ephemeral: true,
+      });
     }
-  }}
-);
+  }
+});
 
-client.login(TOKEN)
+//todo: Обробник подій який додає бали за повідомлення довші за 3 літери
+client.on("messageCreate", accrualPoints);
+
+// todo: Обробник подій який додає бали якщо у голосову чаті присутні щонайменше четверо осіб
+// client.on("ready", (interaction) => getMembersInVoiceChanel(interaction));
+client.on("ready", () => {
+  const voiceChannels = client.channels.cache.filter(
+    (channel) => channel.type === "voice"
+  );
+  console.log(voiceChannels);
+});
+
+client.login(TOKEN);
