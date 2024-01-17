@@ -11,8 +11,7 @@ const { config } = require("dotenv");
 const accrualPoints = require("./utils/messages.js");
 const getMembersInVoiceChanel = require("./utils/voicechanel.js");
 
-} = require('discord.js');
-const { config } = require('dotenv');
+
 const { default: mongoose } = require('mongoose');
 
 // const { REST } = require( "@discordjs/rest");
@@ -30,6 +29,7 @@ const client = new Client({
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildVoiceStates,
     ],
 });
@@ -98,6 +98,20 @@ client.on(Events.InteractionCreate, async(interaction) => {
 
 //todo: Обробник подій який додає бали за повідомлення довші за 3 літери
 client.on("messageCreate", accrualPoints);
+
+//todo: Nitro boost event
+client.on(Events.GuildMemberUpdate, (oldMember, newMember) => {
+  if (oldMember.roles.cache.size !== newMember.roles.cache.size) {
+    if (
+      !oldMember.roles.cache.has("1192072016866574386") &&
+      newMember.roles.cache.has("1192072016866574386")
+    ) {
+      client.guilds.cache
+        .first()
+        .systemChannel.send(`Boost event by <@${newMember.user.id}>`);
+    }
+  }
+});
 
 // todo: Обробник подій який додає бали якщо у голосову чаті присутні щонайменше четверо осіб
 // client.on("ready", (interaction) => getMembersInVoiceChanel(interaction));
