@@ -4,16 +4,12 @@ const {
   Guild,
   Routes,
   Events,
-  Collection,
-
-} = require("discord.js");
+  Collection} = require("discord.js");
 const { config } = require("dotenv");
 const accrualPoints = require("./utils/messages.js");
 const getMembersInVoiceChanel = require("./utils/voicechanel.js");
-
-} = require('discord.js');
-const { config } = require('dotenv');
 const { default: mongoose } = require('mongoose');
+const Level = require("./models/Level");
 
 // const { REST } = require( "@discordjs/rest");
 const fs = require("node:fs");
@@ -71,6 +67,22 @@ client.on("ready", async () => {
 
 client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
+  const currentUsers = await Level.find({ userId: interaction.user.id });
+  // console.log(currentUsers)
+  
+  if (currentUsers.length === 0) {
+        const newUser = new Level (
+           {
+             userId: interaction.user.id,
+             guildId: interaction.guild.id,
+             xp: 0,
+             level: 1
+           }
+    )
+    console.log('some')
+    // console.log(await newUser.save())
+    await newUser.save()
+       }
 
   const command = interaction.client.commands.get(interaction.commandName);
 
