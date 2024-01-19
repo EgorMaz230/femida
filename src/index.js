@@ -24,6 +24,12 @@ const TOKEN = process.env.TOKEN;
 // const CLIENT_ID = process.env.CLIENT_ID;
 // const GUILD_ID = process.env.GUILD_ID;
 
+
+const { MongoClient } = require('mongodb');
+
+const MONGODB_URI = process.env.MONGODB_URI;
+const DATABASE_NAME = 'messages';
+
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -101,51 +107,82 @@ client.on("messageCreate", accrualPoints);
 
 //todo: Nitro boost event
 client.on(Events.GuildMemberUpdate, (oldMember, newMember) => {
-  if (oldMember.roles.cache.size !== newMember.roles.cache.size) {
-    if (
-      !oldMember.roles.cache.has("1192072016866574386") &&
-      newMember.roles.cache.has("1192072016866574386")
-    ) {
-      client.guilds.cache
-        .first()
-        .systemChannel.send(`Boost event by <@${newMember.user.id}>`);
+    if (oldMember.roles.cache.size !== newMember.roles.cache.size) {
+        if (!oldMember.roles.cache.has("1192072016866574386") &&
+            newMember.roles.cache.has("1192072016866574386")
+        ) {
+            client.guilds.cache
+                .first()
+                .systemChannel.send(`Boost event by <@${newMember.user.id}>`);
+        }
     }
-  }
 });
 
 // todo: Обробник подій який додає бали якщо у голосову чаті присутні щонайменше четверо осіб
 // client.on("ready", (interaction) => getMembersInVoiceChanel(interaction));
-client.on("ready", () => {
-    const voiceChannels = client.channels.cache.filter(
-        (channel) => channel.type === "voice"
-    );
-    console.log(voiceChannels);
-});
 
-const userMessages = {};
+
+// Кодд Олександра >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+const messages = require("./models/messages.js");
+
+// client.on("ready", async() => {
+//     try {
+//         // Створення та підключення до об'єкта MongoDB
+//         const dbClient = new MongoClient(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+//         await dbClient.connect();
+//         console.log('Connected to DB');
+
+//         // Призначте dbClient глобальній змінній, щоб можна було його використовувати в інших частинах коду
+//         global.dbClient = dbClient;
+//     } catch (error) {
+//         console.log(`There was an error while connecting to the database: ${error}`);
+//     }
+// });
+
+// ...
+
 
 client.on('messageCreate', async(message) => {
     if (message.author.bot) return;
 
     const userId = message.author.id;
-
-    if (!userMessages[userId]) {
-        userMessages[userId] = [];
-    }
-
     const content = message.content;
 
-    userMessages[userId].push(content);
-
-
-    const lastThreeMessages = userMessages[userId].slice(-3);
-    if (lastThreeMessages.every(msg => msg === content)) {
-        message.reply('Ви відправили 3 однакових повідомлення. Будь ласка, утримайте себе від повторень.');
-
-    } else {
+    try {
+        // Збереження нового повідомлення в базу даних
+        const newMessage = new messages({
+            userId: userId,
+            message: content,
+        });
+        await newMessage.save();
         console.log(`Користувач написав: ${content}`);
-        console.log(userMessages);
 
+        // Пошук кількості однакових повідомлень від цього користувача
+        const countOfSameMessages = await messages.countDocuments({
+            userId: userId,
+            message: content,
+        });
+
+        // Якщо кількість однакових повідомлень більше трьох, вивести повідомлення
+        if (countOfSameMessages > 3) {
+            console.log(`Користувач ${userId} відправив ${countOfSameMessages} однакових повідомлення: ${content}`);
+            message.reply(`Ви відправили ${countOfSameMessages} однакових повідомлення. Будь ласка, утримайте себе від повторень.`);
+        }
+    } catch (error) {
+        console.error('Помилка при збереженні:', error);
+    }
+});
+
+
+client.on('messageCreate', async(message) => {
+    // Перевірка, чи автор повідомлення - бот або чи є текстовий контент
+    if (message.author.bot || !message.content) return;
+
+    // Перевірка, чи є прикріплені файли
+    if (message.attachments.size > 0) {
+        // Якщо є фото, відправте відповідь
+        message.reply('вам не нараховано очок');
     }
 });
 client.login(TOKEN);
