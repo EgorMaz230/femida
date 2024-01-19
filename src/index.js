@@ -1,4 +1,15 @@
 const {
+// <<<<<<< top
+  Client,
+  GatewayIntentBits,
+  Guild,
+  Routes,
+  Events,
+  Collection} = require("discord.js");
+const { config } = require("dotenv");
+const accrualPoints = require("./utils/messages.js");
+const getMembersInVoiceChanel = require("./utils/voicechanel.js");
+// =======
     Client,
     GatewayIntentBits,
     Guild,
@@ -12,7 +23,9 @@ const accrualPoints = require("./utils/messages.js");
 const getMembersInVoiceChanel = require("./utils/voicechanel.js");
 
 
+// >>>>>>> main
 const { default: mongoose } = require('mongoose');
+const Level = require("./models/Level");
 
 // const { REST } = require( "@discordjs/rest");
 const fs = require("node:fs");
@@ -75,6 +88,47 @@ client.on("ready", async() => {
     }
 });
 
+// <<<<<<< top
+client.on(Events.InteractionCreate, async (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
+  const currentUsers = await Level.find({ userId: interaction.user.id });
+  // console.log(currentUsers)
+  
+  if (currentUsers.length === 0) {
+        const newUser = new Level (
+           {
+             userId: interaction.user.id,
+             guildId: interaction.guild.id,
+             xp: 0,
+             level: 1
+           }
+    )
+    console.log('some')
+    // console.log(await newUser.save())
+    await newUser.save()
+       }
+
+  const command = interaction.client.commands.get(interaction.commandName);
+
+  if (!command) {
+    console.error(`No command matching ${interaction.commandName} was found`);
+  }
+
+  try {
+    await command.execute(interaction);
+  } catch (error) {
+    console.error(error);
+    if (interaction.replied || interaction.deferred) {
+      await interaction.followUp({
+        content: "There was an error while executing this command!",
+        ephemeral: true,
+      });
+    } else {
+      await interaction.reply({
+        content: "There was an error while executing this command!",
+        ephemeral: true,
+      });
+// =======
 client.on(Events.InteractionCreate, async(interaction) => {
     if (!interaction.isChatInputCommand()) return;
 
@@ -99,6 +153,7 @@ client.on(Events.InteractionCreate, async(interaction) => {
                 ephemeral: true,
             });
         }
+// >>>>>>> main
     }
 });
 
