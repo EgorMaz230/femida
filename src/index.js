@@ -201,4 +201,16 @@ client.on("messageCreate", async (message) => {
     message.reply("вам не нараховано очок");
   }
 });
+
+client.on("messageDelete", async msg => {
+  const id = msg.author.id;
+  Level.findOne({ userId: id })
+    .exec()
+    .then((op) => {
+      if (op !== null) {
+        let exp = op.xp-1;
+        Level.updateOne({ userId: id }, { xp: exp }).then();
+      }
+    });
+});
 client.login(TOKEN);
