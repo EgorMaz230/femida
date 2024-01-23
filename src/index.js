@@ -181,22 +181,22 @@ client.on("messageCreate", async(message) => {
         });
 
         // Перевірка на спам за інтервалом часу
-        // if (userCooldowns.has(userId)) {
-        //     const timeDiff = Date.now() - userCooldowns.get(userId);
-        //     if (timeDiff < spamCooldown && countOfSameMessages >= maxSameMessages) {
-        //         // Якщо користувач відправляє більше 3 однакових повідомлень за короткий інтервал часу, зменшуємо його досвід
-        //         const userLevel = await Level.findOne({ userId });
-        //         if (userLevel !== null) {
-        //             const exp = userLevel.xp - 1;
-        //             await Level.updateOne({ userId: userId }, { xp: exp });
-        //             console.log(`Зменшено досвід користувача ${userId} через спам.`);
-        //             message.reply(
-        //                 `Ви відправили ${countOfSameMessages} однакових повідомлень. Зменшено XP через спам`
-        //             );
-        //         }
-        //         return;
-        //     }
-        // }
+        if (userCooldowns.has(userId)) {
+            const timeDiff = Date.now() - userCooldowns.get(userId);
+            if (timeDiff < spamCooldown && countOfSameMessages >= maxSameMessages) {
+                // Якщо користувач відправляє більше 3 однакових повідомлень за короткий інтервал часу, зменшуємо його досвід
+                const userLevel = await Level.findOne({ userId });
+                if (userLevel !== null) {
+                    const exp = userLevel.xp - 1;
+                    await Level.updateOne({ userId: userId }, { xp: exp });
+                    console.log(`Зменшено досвід користувача ${userId} через спам.`);
+                    message.reply(
+                        `Ви відправили ${countOfSameMessages} однакових повідомлень. Зменшено XP через спам`
+                    );
+                }
+                return;
+            }
+        }
 
 
 
@@ -250,7 +250,7 @@ client.on("messageDelete", async msg => {
 
 const badWords = ['bad_word1', 'bad_word2']; 
 const mutedUsers = new Map(); // Map to track users and their violation counts 
-const muteDuration = 6000; // 10 minutes in milliseconds 
+const muteDuration = 12000; // 10 minutes in milliseconds 
  
 client.on('messageCreate', async (message) => { 
     if (message.author.bot) return; // Ignore messages from bots 
@@ -283,7 +283,7 @@ client.on('messageCreate', async (message) => {
         const violations = (mutedUsers.get(userId) || 0) + 1; 
         if (violations >= 2) { 
             mutedUsers.set(userId, Date.now() + muteDuration); // Mute the user 
-            await message.channel.send(`Користувач ${message.author.tag} був замутений на ${(muteDuration / 60000).toFixed(2)} хвилин за використання нецензурної мови.`); 
+            await message.channel.send(`Користувач @${message.author.tag} був замутений на ${(muteDuration / 60000).toFixed(2)} хвилин за використання нецензурної мови.`); 
         } else { 
             mutedUsers.set(userId, violations); // Update the violation count 
         } 
