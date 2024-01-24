@@ -11,8 +11,6 @@ const { config } = require("dotenv");
 const accrualPoints = require("./utils/messages.js");
 const getMembersInVoiceChanel = require("./utils/voicechanel.js");
 
-} = require('discord.js');
-const { config } = require('dotenv');
 const { default: mongoose } = require('mongoose');
 
 // const { REST } = require( "@discordjs/rest");
@@ -73,6 +71,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
   const command = interaction.client.commands.get(interaction.commandName);
+  
 
   if (!command) {
     console.error(`No command matching ${interaction.commandName} was found`);
