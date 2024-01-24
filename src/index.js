@@ -239,18 +239,18 @@ client.on("messageDelete", async msg => {
             }
         });
 });
-////////////////////////////////////////////////////////////////////////////
 
 
 
 
 
 
+//////////////////////////////////////////////////////////////////////////// Egor code
 
 
 const badWords = ['bad_word1', 'bad_word2']; 
-const mutedUsers = new Map(); // Map to track users and their violation counts 
-const muteDuration = 12000; // 10 minutes in milliseconds 
+const mutedUsers = new Map(); 
+const muteDuration = 12000; // 10 min
  
 client.on('messageCreate', async (message) => { 
     if (message.author.bot) return; // Ignore messages from bots 
@@ -285,13 +285,13 @@ client.on('messageCreate', async (message) => {
             mutedUsers.set(userId, Date.now() + muteDuration); // Mute the user 
             await message.channel.send(`Користувач @${message.author.tag} був замутений на ${(muteDuration / 60000).toFixed(2)} хвилин за використання нецензурної мови.`); 
         } else { 
-            mutedUsers.set(userId, violations); // Update the violation count 
+            mutedUsers.set(userId, violations); 
         } 
         console.log(mutedUsers)
         
     } 
 });
 
-
+//////////////////////////////////////////////////////////////////////////// Egor code
 
 client.login(TOKEN);
