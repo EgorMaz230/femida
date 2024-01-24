@@ -282,17 +282,23 @@ client.on("messageCreate", async(message) => {
 
 
 });
-client.on("messageDelete", async msg => {
+client.on("messageDelete", async (msg) => {
     const id = msg.author.id;
-    Level.findOne({ userId: id })
-        .exec()
-        .then((op) => {
+    const seconds = (Date.now() - msg.createdTimestamp) / 1000;
+    const mins = seconds / 60;
+    const hours = mins / 60;
+    const days = hours / 24;
+    const weeks = days / 7;
+    if (weeks <= 1) {
+        Level.findOne({ userId: id })
+            .exec()
+            .then((op) => {
             if (op !== null) {
                 let exp = op.xp - 1;
                 Level.updateOne({ userId: id }, { xp: exp }).then();
             }
         });
-
+    }
 });
 
 
