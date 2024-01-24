@@ -1,10 +1,11 @@
 const {
-    Client,
-    GatewayIntentBits,
-    Guild,
-    Routes,
-    Events,
+  Client,
+  GatewayIntentBits,
+  Guild,
+  Routes,
+  Events,
     Collection,
+  EmbedBuilder
 } = require("discord.js");
 const { config } = require("dotenv");
 const accrualPoints = require("./utils/messages.js");
@@ -30,13 +31,13 @@ const MONGODB_URI = process.env.MONGODB_URI;
 const DATABASE_NAME = "messages";
 
 const client = new Client({
-    intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent,
-        GatewayIntentBits.GuildMembers,
-        GatewayIntentBits.GuildVoiceStates,
-    ],
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildVoiceStates,
+  ],
 });
 
 // const rest = new REST({ version: "10" }).setToken(TOKEN);
@@ -47,89 +48,123 @@ const foldersPath = path.join(__dirname, "commands");
 const commandFolders = fs.readdirSync(foldersPath);
 
 for (const folder of commandFolders) {
-    const commandsPath = path.join(foldersPath, folder);
-    const commandFiles = fs
-        .readdirSync(commandsPath)
-        .filter((file) => file.endsWith(".js"));
-    for (const file of commandFiles) {
-        const filePath = path.join(commandsPath, file);
-        const command = require(filePath);
-        if ("data" in command && "execute" in command) {
-            client.commands.set(command.data.name, command);
-        } else {
-            console.log(
-                `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
-            );
-        }
+  const commandsPath = path.join(foldersPath, folder);
+  const commandFiles = fs
+    .readdirSync(commandsPath)
+    .filter((file) => file.endsWith(".js"));
+  for (const file of commandFiles) {
+    const filePath = path.join(commandsPath, file);
+    const command = require(filePath);
+    if ("data" in command && "execute" in command) {
+      client.commands.set(command.data.name, command);
+    } else {
+      console.log(
+        `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
+      );
     }
+  }
 }
 
-client.on("ready", async() => {
-    console.log(`${client.user.tag} is online`);
-    try {
-        await mongoose.connect(process.env.MONGODB_URI);
-        console.log("Connected to DB");
-    } catch (error) {
-        console.log(`There was an error whil connecting to database ${error}`);
-    }
+client.on("ready", async () => {
+  console.log(`${client.user.tag} is online`);
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log("Connected to DB");
+  } catch (error) {
+    console.log(`There was an error whil connecting to database ${error}`);
+  }
 });
 
 // <<<<<<< top
-client.on(Events.InteractionCreate, async(interaction) => {
-    if (!interaction.isChatInputCommand()) return;
-    const currentUsers = await Level.find({ userId: interaction.user.id });
-    // console.log(currentUsers)
+client.on(Events.InteractionCreate, async (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
+  const currentUsers = await Level.find({ userId: interaction.user.id });
+  // console.log(currentUsers)
 
-    if (currentUsers.length === 0) {
-        const newUser = new Level({
-            userId: interaction.user.id,
-            guildId: interaction.guild.id,
-            xp: 0,
-            level: 1,
-        });
-        console.log("some");
-        // console.log(await newUser.save())
-        await newUser.save();
+  if (currentUsers.length === 0) {
+    const newUser = new Level({
+      userId: interaction.user.id,
+      guildId: interaction.guild.id,
+      xp: 0,
+      level: 1,
+    });
+    console.log("some");
+    // console.log(await newUser.save())
+    await newUser.save();
+  }
+
+  const command = interaction.client.commands.get(interaction.commandName);
+
+  if (!command) {
+    console.error(`No command matching ${interaction.commandName} was found`);
+  }
+
+  try {
+    await command.execute(interaction);
+  } catch (error) {
+    console.error(error);
+    if (interaction.replied || interaction.deferred) {
+      await interaction.followUp({
+        content: "There was an error while executing this command!",
+        ephemeral: true,
+      });
+    } else {
+      await interaction.reply({
+        content: "There was an error while executing this command!",
+        ephemeral: true,
+      });
     }
-
-    const command = interaction.client.commands.get(interaction.commandName);
-
-    if (!command) {
-        console.error(`No command matching ${interaction.commandName} was found`);
-    }
-
-    try {
-        await command.execute(interaction);
-    } catch (error) {
-        console.error(error);
-        if (interaction.replied || interaction.deferred) {
-            await interaction.followUp({
-                content: "There was an error while executing this command!",
-                ephemeral: true,
-            });
-        } else {
-            await interaction.reply({
-                content: "There was an error while executing this command!",
-                ephemeral: true,
-            });
-        }
-    }
+  }
 });
 
 //todo: Обробник подій який додає бали за повідомлення довші за 3 літери
 client.on("messageCreate", accrualPoints);
 
 //todo: Nitro boost event
-client.on(Events.GuildMemberUpdate, (oldMember, newMember) => {
-    if (oldMember.roles.cache.size !== newMember.roles.cache.size) {
-        if (!oldMember.roles.cache.has("1192072016866574386") &&
-            newMember.roles.cache.has("1192072016866574386")
-        ) {
-            client.guilds.cache
-                .first()
-                .systemChannel.send(`Boost event by <@${newMember.user.id}>`);
-        }
+
+client.on(Events.GuildMemberUpdate, async (oldMember, newMember) => {
+  if (oldMember.roles.cache.size !== newMember.roles.cache.size) {
+    if (
+      !oldMember.roles.cache.has("1192072016866574386") &&
+      newMember.roles.cache.has("1192072016866574386")
+    ) {
+      const userId = newMember.user.id;
+
+      //? Adding XP for boost
+
+      const userData = await Level.findOne({ userId: userId });
+      console.log(userData);
+
+      const updatedXp = userData.xp + 50;
+
+      await Level.findOneAndUpdate({ userId: userId }, { xp: updatedXp });
+
+      //? Sending a message of boost into the system channel
+
+      const titleChoose = [
+        "Unexpected boost!",
+        "Pleasant boost!",
+        "Surprising boost!",
+      ][Math.floor(Math.random() * 3)];
+
+      const userIcon = `https://cdn.discordapp.com/avatars/${userId}/${newMember.user.avatar}.png?size=256`;
+      const boostEmbed = new EmbedBuilder()
+        .setColor("#f47fff")
+        .setTitle(titleChoose)
+        .setDescription(
+          `<@${userId.toString()}> has just boosted this server!\n+50 XP`
+        )
+        .setAuthor({
+          name: newMember.user.username,
+          iconURL: userIcon,
+        })
+        .setTimestamp();
+
+      client.guilds.cache.first().systemChannel.send({
+        embeds: [boostEmbed],
+      });
     }
+  }
 });
 
 // todo: Обробник подій який додає бали якщо у голосову чаті присутні щонайменше четверо осіб
@@ -201,147 +236,143 @@ const maxSameMessages = 3; // максимальна кількість одна
 
 const userCooldowns = new Map();
 
-client.on("messageCreate", async(message) => {
-    if (message.author.bot) return;
+client.on("messageCreate", async (message) => {
+  if (message.author.bot) return;
 
-    const userId = message.author.id;
-    const content = message.content;
+  const userId = message.author.id;
+  const content = message.content;
 
-    try {
-        // Збереження нового повідомлення в базу даних
-        const newMessage = new messages({
-            userId: userId,
-            message: content,
-        });
-        await newMessage.save();
-        console.log(`Користувач написав: ${content}`);
+  try {
+    // Збереження нового повідомлення в базу даних
+    const newMessage = new messages({
+      userId: userId,
+      message: content,
+    });
+    await newMessage.save();
+    console.log(`Користувач написав: ${content}`);
 
-        const countOfSameMessages = await messages.countDocuments({
-            userId: userId,
-            message: content,
-        });
+    const countOfSameMessages = await messages.countDocuments({
+      userId: userId,
+      message: content,
+    });
 
-        // Перевірка на спам за інтервалом часу
-        if (userCooldowns.has(userId)) {
-            const timeDiff = Date.now() - userCooldowns.get(userId);
-            if (timeDiff < spamCooldown && countOfSameMessages >= maxSameMessages) {
-                // Якщо користувач відправляє більше 3 однакових повідомлень за короткий інтервал часу, зменшуємо його досвід
-                const userLevel = await Level.findOne({ userId });
-                if (userLevel !== null) {
-                    const exp = userLevel.xp - 1;
-                    await Level.updateOne({ userId: userId }, { xp: exp });
-                    console.log(`Зменшено досвід користувача ${userId} через спам.`);
-                    message.reply(
-                        `Ви відправили ${countOfSameMessages} однакових повідомлень. Зменшено XP через спам`
-                    );
-                }
-                return;
-            }
-        }
-
-
-
-        // Оновлюємо час останнього відправленого повідомлення для користувача
-        userCooldowns.set(userId, Date.now());
-    } catch (error) {
-        console.error("Помилка при збереженні:", error);
-    }
-});
-client.on("messageCreate", async(message) => {
-
-    if (message.author.bot || !message.content) return;
-
-    // Перевірка, чи є прикріплені файли (фото)
-    if (message.attachments.size > 0) {
-
-
-        client.on("messageDelete", async msg => {
-            const id = msg.author.id;
-            Level.findOne({ userId: id })
-                .exec()
-                .then((op) => {
-                    if (op !== null) {
-                        let exp = op.xp - 1;
-                        Level.updateOne({ userId: id }, { xp: exp }).then();
-                    }
-                });
-        });
-
-        message.reply("Вам не нараховано XP через відправлене фото.");
-
-        const userId = message.author.id;
+    // Перевірка на спам за інтервалом часу
+    if (userCooldowns.has(userId)) {
+      const timeDiff = Date.now() - userCooldowns.get(userId);
+      if (timeDiff < spamCooldown && countOfSameMessages >= maxSameMessages) {
+        // Якщо користувач відправляє більше 3 однакових повідомлень за короткий інтервал часу, зменшуємо його досвід
         const userLevel = await Level.findOne({ userId });
         if (userLevel !== null) {
-            const exp = userLevel.xp - 1;
-            await Level.updateOne({ userId: userId }, { xp: exp });
-            console.log(`Зменшено XP користувача ${userId} через відправлене фото.`);
+          const exp = userLevel.xp - 1;
+          await Level.updateOne({ userId: userId }, { xp: exp });
+          console.log(`Зменшено досвід користувача ${userId} через спам.`);
+          message.reply(
+            `Ви відправили ${countOfSameMessages} однакових повідомлень. Зменшено XP через спам`
+          );
         }
-
         return;
+      }
     }
 
-
+    // Оновлюємо час останнього відправленого повідомлення для користувача
+    userCooldowns.set(userId, Date.now());
+  } catch (error) {
+    console.error("Помилка при збереженні:", error);
+  }
 });
-client.on("messageDelete", async msg => {
-    const id = msg.author.id;
-    Level.findOne({ userId: id })
+client.on("messageCreate", async (message) => {
+  if (message.author.bot || !message.content) return;
+
+  // Перевірка, чи є прикріплені файли (фото)
+  if (message.attachments.size > 0) {
+    client.on("messageDelete", async (msg) => {
+      const id = msg.author.id;
+      Level.findOne({ userId: id })
         .exec()
         .then((op) => {
-            if (op !== null) {
-                let exp = op.xp - 1;
-                Level.updateOne({ userId: id }, { xp: exp }).then();
-            }
+          if (op !== null) {
+            let exp = op.xp - 1;
+            Level.updateOne({ userId: id }, { xp: exp }).then();
+          }
         });
+    });
 
+    message.reply("Вам не нараховано XP через відправлене фото.");
+
+    const userId = message.author.id;
+    const userLevel = await Level.findOne({ userId });
+    if (userLevel !== null) {
+      const exp = userLevel.xp - 1;
+      await Level.updateOne({ userId: userId }, { xp: exp });
+      console.log(`Зменшено XP користувача ${userId} через відправлене фото.`);
+    }
+
+    return;
+  }
 });
-
-
+client.on("messageDelete", async (msg) => {
+  const id = msg.author.id;
+  Level.findOne({ userId: id })
+    .exec()
+    .then((op) => {
+      if (op !== null) {
+        let exp = op.xp - 1;
+        Level.updateOne({ userId: id }, { xp: exp }).then();
+      }
+    });
+});
 
 //////////////////////////////////////////////////////////////////////////// Egor code
 
-
-const badWords = ['bad_word1', 'bad_word2']; 
-const mutedUsers = new Map(); 
+const badWords = ["bad_word1", "bad_word2"];
+const mutedUsers = new Map();
 const muteDuration = 12000; // 10 min
 
-client.on('messageCreate', async (message) => { 
-    if (message.author.bot) return; // Ignore messages from bots 
+client.on("messageCreate", async (message) => {
+  if (message.author.bot) return; // Ignore messages from bots
 
-    const userId = message.author.id; 
+  const userId = message.author.id;
 
-    // Check if the user is currently muted 
-    if (mutedUsers.has(userId)) { 
-        const unmuteTime = mutedUsers.get(userId); 
-        if (unmuteTime > Date.now()) { 
-            await message.reply("Ви ще маєте діючий м'ют. Будь ласка, залишайтеся відсутнім(ою) від нецензурних слів."); 
-            await message.delete(); 
-            return; 
-        } 
-    } 
+  // Check if the user is currently muted
+  if (mutedUsers.has(userId)) {
+    const unmuteTime = mutedUsers.get(userId);
+    if (unmuteTime > Date.now()) {
+      await message.reply(
+        "Ви ще маєте діючий м'ют. Будь ласка, залишайтеся відсутнім(ою) від нецензурних слів."
+      );
+      await message.delete();
+      return;
+    }
+  }
 
-    // Check for bad words 
-    let containsBadWord = false; 
-    for (const badWord of badWords) { 
-        if (message.content.toLowerCase().includes(badWord)) { 
-            containsBadWord = true; 
-            break; 
-        } 
-    } 
+  // Check for bad words
+  let containsBadWord = false;
+  for (const badWord of badWords) {
+    if (message.content.toLowerCase().includes(badWord)) {
+      containsBadWord = true;
+      break;
+    }
+  }
 
-    if (containsBadWord) { 
-        await message.reply('Це повідомлення було видалено через те, що воно містить нецензурне слово. Будь ласка, утримайтеся від використання такої мови.'); 
-        await message.delete(); 
+  if (containsBadWord) {
+    await message.reply(
+      "Це повідомлення було видалено через те, що воно містить нецензурне слово. Будь ласка, утримайтеся від використання такої мови."
+    );
+    await message.delete();
 
-        const violations = (mutedUsers.get(userId) || 0) + 1; 
-        if (violations >= 2) { 
-            mutedUsers.set(userId, Date.now() + muteDuration); // Mute the user 
-            await message.channel.send(`Користувач @${message.author.tag} був замутений на ${(muteDuration / 60000).toFixed(2)} хвилин за використання нецензурної мови.`); 
-        } else { 
-            mutedUsers.set(userId, violations); 
-        } 
-        console.log(mutedUsers)
-
-    } 
+    const violations = (mutedUsers.get(userId) || 0) + 1;
+    if (violations >= 2) {
+      mutedUsers.set(userId, Date.now() + muteDuration); // Mute the user
+      await message.channel.send(
+        `Користувач @${message.author.tag} був замутений на ${(
+          muteDuration / 60000
+        ).toFixed(2)} хвилин за використання нецензурної мови.`
+      );
+    } else {
+      mutedUsers.set(userId, violations);
+    }
+    console.log(mutedUsers);
+  }
 });
 
 //////////////////////////////////////////////////////////////////////////// Egor code
