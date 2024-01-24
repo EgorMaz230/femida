@@ -135,6 +135,47 @@ client.on(Events.GuildMemberUpdate, (oldMember, newMember) => {
 // todo: Обробник подій який додає бали якщо у голосову чаті присутні щонайменше четверо осіб
 // client.on("ready", (interaction) => getMembersInVoiceChanel(interaction));
 
+// todo: Обробник подій який додає бали якщо у голосову чаті присутні щонайменше четверо осіб
+client.on("voiceStateUpdate", (oldState, newState) => {
+  const voiceChannels = client.channels.cache.filter((elem) => elem.type === 2);
+  const arrObj = [];
+  // console.log("newstateid", newState.channelId);
+
+  voiceChannels.forEach((voiceChannel) => {
+    arrObj.push(voiceChannel.members);
+  });
+
+  async function fetchMembers() {
+    let voiceChannel = {};
+    await client.channels
+      .fetch(newState.channelId)
+      .then((channel) => (voiceChannel = channel))
+      .catch((err) => console.log(err));
+
+    const members = voiceChannel.members;
+    const userIds = members.map((member) => member.user.id);
+
+    userIds.forEach(async (user) => {
+      const people = await Level.findOne({ userId: user });
+      const updateXp = people.xp + 0.5;
+      await Level.findOneAndUpdate({ userId: user }, { xp: updateXp });
+      if (people.xp >= 100) {
+        const updtaeLevel = people.level + 1;
+        const addXp = 100 - people.xp;
+        await Level.findOneAndUpdate(
+          { userId: user },
+          { level: updtaeLevel, xp: addXp }
+        );
+      }
+      console.log("people", people);
+    });
+  }
+
+  if (arrObj.length >= 4) {
+    fetchMembers();
+  }
+});
+
 // Кодд Олександра >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 const messages = require("./models/messages.js");
@@ -213,6 +254,18 @@ client.on("messageCreate", async(message) => {
     // Перевірка, чи є прикріплені файли (фото)
     if (message.attachments.size > 0) {
 
+
+client.on("messageDelete", async (msg) => {
+  const id = msg.author.id;
+  Level.findOne({ userId: id })
+    .exec()
+    .then((op) => {
+      if (op !== null) {
+        let exp = op.xp - 1;
+        Level.updateOne({ userId: id }, { xp: exp }).then();
+      }
+    });
+
         message.reply("Вам не нараховано XP через відправлене фото.");
 
         const userId = message.author.id;
@@ -238,5 +291,6 @@ client.on("messageDelete", async msg => {
                 Level.updateOne({ userId: id }, { xp: exp }).then();
             }
         });
+
 });
 client.login(TOKEN);

@@ -9,3 +9,12 @@ module.exports = async function getMembersInVoiceChanel(interaction) {
   // const voiceChannels = await interaction.channels.fetchAll({ type: "voice" });
   // console.log(voiceChannels);
 };
+
+
+// console.log("new state", idArrUsers);
+    // const idArrUsers = [newState.id];
+
+    // idArrUsers.forEach(async (user) => {
+    //   idArrUsers.push(user.id);
+    //   console.log("new state", idArrUsers);
+    // });
