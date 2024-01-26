@@ -280,6 +280,7 @@ client.on("messageCreate", async (message) => {
     console.error("Помилка при збереженні:", error);
   }
 });
+
 client.on("messageCreate", async (message) => {
   if (message.author.bot || !message.content) return;
 
@@ -298,6 +299,26 @@ client.on("messageCreate", async (message) => {
     });
 
     message.reply("Вам не нараховано XP через відправлене фото.");
+
+client.on("messageDelete", async (msg) => {
+    const id = msg.author.id;
+    const seconds = (Date.now() - msg.createdTimestamp) / 1000;
+    const mins = seconds / 60;
+    const hours = mins / 60;
+    const days = hours / 24;
+    const weeks = days / 7;
+    if (weeks <= 1) {
+        Level.findOne({ userId: id })
+            .exec()
+            .then((op) => {
+            if (op !== null) {
+                let exp = op.xp - 1;
+                Level.updateOne({ userId: id }, { xp: exp }).then();
+            }
+        });
+    }
+});
+
 
     const userId = message.author.id;
     const userLevel = await Level.findOne({ userId });
