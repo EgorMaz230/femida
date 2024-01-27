@@ -11,7 +11,7 @@ const {
 const { config } = require("dotenv");
 const accrualPoints = require("./utils/messages.js");
 const getMembersInVoiceChanel = require("./utils/voicechanel.js");
-
+const cron = require("cron");
 // >>>>>>> main
 const { default: mongoose } = require("mongoose");
 const Level = require("./models/Level");
@@ -504,4 +504,76 @@ client.on("messageCreate", async(message) => {
 });
 
 //////////////////////////////////////////////////////////////////////////// Egor code
+
+
+//todo: Monthly rating
+
+async function getUsersByIds(usersIds) {
+  let guildId = await Level.find({});
+  guildId = guildId[0].guildId;
+  const guild = client.guilds.cache.get(guildId);
+
+  try {
+    const usersArr = [];
+    await Promise.all(
+      usersIds.map(async (userId) => {
+        try {
+          const member = await guild.members.fetch(userId);
+          usersArr.push(member.user);
+        } catch (error) {
+          console.error(
+            `Error fetching user with ID ${userId}:`,
+            error.message
+          );
+        }
+      })
+    );
+
+    return usersArr;
+  } catch (error) {
+    console.error("Error fetching users:", error.message);
+    throw error;
+  }
+}
+
+async function creatingRatingEmbed() {
+  const usersData = await Level.find({});
+  const usersIds = usersData.map((user) => user.userId);
+  const usersObjs = await getUsersByIds(usersIds);
+  const usersArrEmbed = usersData.map((user) => {
+    const userName = usersObjs.find(
+      (userObj) => userObj.id === user.userId
+    ).displayName;
+    return {
+      name: userName,
+      value: `XP: ${user.xp}\nLevel: ${user.level}`,
+      // __level: user.level,
+      __xp: user.xp,
+    };
+  });
+  const sortedUsersArrEmbed = usersArrEmbed.sort(
+    (firstUser, secondUser) => secondUser.__xp - firstUser.__xp
+  );
+  const ratingEmbed = new EmbedBuilder()
+    .setColor("Yellow")
+    .setTitle("Щомісячний рейтинг участників")
+    .addFields(...sortedUsersArrEmbed);
+  return ratingEmbed;
+}
+
+async function sendRatingEveryMonth() {
+  const ratingEmbed = await creatingRatingEmbed();
+
+  const sendRatingFn = async () => {
+    client.channels
+      .fetch("1192080421677191288")
+      .then((channel) => channel.send({ embeds: [ratingEmbed] }));
+  };
+  const sendRatingJob = new cron.CronJob("00 00 10 * * *", sendRatingFn);
+  sendRatingJob.start();
+}
+
+sendRatingEveryMonth();
+
 client.login(TOKEN);
+
