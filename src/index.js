@@ -5,7 +5,8 @@ const {
     Routes,
     Events,
     Collection,
-    EmbedBuilder
+    EmbedBuilder,
+    Partials
 } = require("discord.js");
 const { config } = require("dotenv");
 const accrualPoints = require("./utils/messages.js");
@@ -38,6 +39,7 @@ const client = new Client({
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildVoiceStates,
     ],
+    partials: [Partials.Channel],
 });
 
 // const rest = new REST({ version: "10" }).setToken(TOKEN);
@@ -209,24 +211,35 @@ client.on("voiceStateUpdate", (oldState, newState) => {
 
 // Кодд Олександра >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+
+
+
+
 const messages = require("./models/messages.js");
 
+// Створення об'єкту для обробки спаму
+const antiSpam = {
+    warnThreshold: 3, // Кількість повідомлень підряд, що спричинять попередження
+    muteTreshold: 6, // Кількість повідомлень підряд, що спричинять заглушення
+    kickTreshold: 9, // Кількість повідомлень підряд, що спричинять вилучення з сервера
+    banTreshold: 12, // Кількість повідомлень підряд, що спричинять заборону
+    warnMessage: "Stop spamming!", // Повідомлення при попередженні користувача
+    muteMessage: "You have been muted for spamming!", // Повідомлення при заглушенні користувача
+    kickMessage: "You have been kicked for spamming!", // Повідомлення при вилученні з сервера користувача
+    banMessage: "You have been banned for spamming!", // Повідомлення при забороні користувачу
+    unMuteTime: 60, // Час в хвилинах до зняття заглушення користувача
+    verbose: true, // Чи логувати кожну дію в консоль
+    removeMessages: true, // Чи видаляти всі повідомлення від користувача
+    // Якщо користувач має ці дозволи, ігнорувати його
+
+}
 
 
-
-const spamCooldown = 60000; // період часу для визначення спаму в мілісекундах (тут 60 секунд)
-const maxSameMessages = 3; // максимальна кількість однакових повідомлень для спаму
-
-const userCooldowns = new Map();
-
-
-// Оголошення змінної для ідентифікації таймера очищення бази даних
-let clearDatabaseInterval;
 
 // Функція для очищення бази даних
 async function clearDatabase() {
     try {
-        await messages.deleteMany({ createdAt: { $lt: new Date(Date.now() - spamCooldown) } });
+        await messages.deleteMany({})
         console.log("База даних очищена.");
     } catch (error) {
         console.error("Помилка при очищенні бази даних:", error);
@@ -238,57 +251,142 @@ function startClearDatabaseInterval() {
     clearDatabaseInterval = setInterval(clearDatabase, 60000);
 }
 
-// Функція для зупинки таймера очищення бази даних
-function stopClearDatabaseInterval() {
-    clearInterval(clearDatabaseInterval);
-}
 
-// Обробник подій "messageCreate"
+
+antiSpam.messageCount = new Map();
+const userMuteCooldowns = new Map();
+const userCooldowns = new Map();
+
+
 client.on("messageCreate", async(message) => {
+    // Перевірка, чи автор повідомлення не є ботом
     if (message.author.bot) return;
 
+    // Отримання ідентифікатора користувача та тексту повідомлення
     const userId = message.author.id;
     const content = message.content;
 
     try {
-        // Збереження нового повідомлення в базу даних
+        // Отримання часу останнього повідомлення користувача
+        const lastMessageTime = userCooldowns.get(userId) || 0;
+        const currentTime = Date.now();
+
+        // Збереження нового повідомлення в базі даних
         const newMessage = new messages({
             userId: userId,
             message: content,
         });
         await newMessage.save();
-        console.log(`Користувач написав: ${content}`);
+        console.log(`User wrote: ${content}`);
 
-        const countOfSameMessages = await messages.countDocuments({
-            userId: userId,
-            message: content,
-        });
+        // Перевірка наявності користувача в списку cooldowns
+        if (!userCooldowns.has(userId)) {
+            // Додавання користувача до списку cooldowns та встановлення таймауту
+            userCooldowns.set(userId, currentTime);
 
-        // Перевірка на спам за інтервалом часу
-        if (userCooldowns.has(userId)) {
-            const timeDiff = Date.now() - userCooldowns.get(userId);
-            if (timeDiff < spamCooldown && countOfSameMessages >= maxSameMessages) {
-                // Якщо користувач відправляє більше 3 однакових повідомлень за короткий інтервал часу, зменшуємо його досвід
-                const userLevel = await Level.findOne({ userId });
-                if (userLevel !== null) {
-                    const exp = userLevel.xp - 1;
-                    await Level.updateOne({ userId: userId }, { xp: exp });
-                    console.log(`Зменшено досвід користувача ${userId} через спам.`);
-                    message.reply(`Ви відправили ${countOfSameMessages} однакових повідомлень. Зменшено XP через спам`);
+            setTimeout(async() => {
+                // Отримання кількості аналогічних повідомлень користувача
+                const countOfSameMessages = await messages.countDocuments({
+                    userId: userId,
+                    message: content,
+                });
+
+                // Отримання повідомлень користувача на каналі
+                const userMessages = await message.channel.messages.fetch({ limit: 100 });
+                // Фільтрація спам-повідомлень користувача
+                const userSpamMessages = userMessages.filter((msg) => msg.author.id === userId && msg.content === content && msg.id !== message.id);
+
+                // Видалення спам-повідомлень
+                userSpamMessages.forEach(async(msg) => {
+                    try {
+                        await msg.delete();
+                    } catch (error) {
+                        console.error("Error deleting message:", error);
+                    }
+                });
+
+                // Визначення дій в залежності від кількості аналогічних повідомлень
+                if (countOfSameMessages >= antiSpam.warnThreshold) {
+                    switch (true) {
+                        case countOfSameMessages >= antiSpam.banTreshold:
+
+                            message.channel.send(antiSpam.banMessage);
+                            // Отримання об'єкта користувача
+                            // const bannedUser = message.guild.members.cache.get(userId);
+                            // // Блокування користувача на сервері
+                            // bannedUser.ban({ reason: 'Excessive spam' });
+                            break;
+                        case countOfSameMessages >= antiSpam.kickTreshold:
+
+                            // message.channel.send(antiSpam.kickMessage);
+                            // const kickedUser = message.guild.members.cache.get(userId);
+                            // // Вилучення користувача з серверу
+                            // kickedUser.kick({ reason: 'Excessive spam' });
+                            break;
+                        case countOfSameMessages >= antiSpam.muteTreshold:
+                            // Встановлення ролі "Muted" та часу мута
+                            const lastMuteTime = userMuteCooldowns.get(userId) || 0;
+                            const muteCooldown = 60 * 1000; // 1 хвилина
+
+                            if (currentTime - lastMuteTime > muteCooldown) {
+                                const muteRole = message.guild.roles.cache.find(role => role.name === 'Muted');
+                                if (muteRole) {
+                                    const member = message.guild.members.cache.get(userId);
+                                    if (member) {
+                                        member.roles.add(muteRole);
+                                        message.channel.send(`<@${userId}> ${antiSpam.muteMessage}`);
+
+                                        userMuteCooldowns.set(userId, currentTime);
+
+                                        // Зняття ролі "Muted" після вказаного часу
+                                        setTimeout(() => {
+                                            member.roles.remove(muteRole);
+                                        }, antiSpam.unMuteTime * 1000);
+                                    }
+                                }
+                            }
+                            break;
+                        case countOfSameMessages >= antiSpam.warnThreshold:
+                            // Надсилання попередження та віднімання деякої кількості досвіду (XP)
+                            message.channel.send(antiSpam.warnMessage);
+                            const id = message.author.id;
+                            Level.findOne({ userId: id })
+                                .exec()
+                                .then((op) => {
+                                    if (op !== null) {
+                                        let exp = op.xp - 5;
+                                        Level.updateOne({ userId: id }, { xp: exp }).then();
+                                        console.log('Points deducted');
+                                    }
+                                });
+                            break;
+                        default:
+                            break;
+                    }
                 }
-                return;
-            }
+
+                // Видалення користувача зі списку cooldowns
+                userCooldowns.delete(userId);
+            }, 1000);
         }
 
-        // Оновлюємо час останнього відправленого повідомлення для користувача
-        userCooldowns.set(userId, Date.now());
+        // Додавання користувача до списку cooldowns
+        userCooldowns.set(userId, currentTime);
     } catch (error) {
-        console.error("Помилка при збереженні:", error);
+        console.error("Error saving message:", error);
     }
 });
-
 // Запускаємо таймер очищення бази даних при старті програми
 startClearDatabaseInterval();
+
+
+
+
+
+
+
+
+
 
 client.on("messageCreate", async(message) => {
     if (message.author.bot || !message.content) return;
