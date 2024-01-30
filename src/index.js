@@ -349,16 +349,7 @@ client.on("messageCreate", async(message) => {
                         case countOfSameMessages >= antiSpam.warnThreshold:
                             // Надсилання попередження та віднімання деякої кількості досвіду (XP)
                             message.channel.send(antiSpam.warnMessage);
-                            const id = message.author.id;
-                            Level.findOne({ userId: id })
-                                .exec()
-                                .then((op) => {
-                                    if (op !== null) {
-                                        let exp = op.xp - 5;
-                                        Level.updateOne({ userId: id }, { xp: exp }).then();
-                                        console.log('Points deducted');
-                                    }
-                                });
+                            removePoints(message.author.id, 5);
                             break;
                         default:
                             break;
@@ -393,39 +384,9 @@ client.on("messageCreate", async(message) => {
 
     // Перевірка, чи є прикріплені файли (фото)
     if (message.attachments.size > 0) {
-        client.on("messageDelete", async(msg) => {
-            const id = msg.author.id;
-            Level.findOne({ userId: id })
-                .exec()
-                .then((op) => {
-                    if (op !== null) {
-                        let exp = op.xp - 1;
-                        Level.updateOne({ userId: id }, { xp: exp }).then();
-                    }
-                });
-        });
+        removePoints(message.author.id, 1);
 
         message.reply("Вам не нараховано XP через відправлене фото.");
-
-        client.on("messageDelete", async(msg) => {
-            const id = msg.author.id;
-            const seconds = (Date.now() - msg.createdTimestamp) / 1000;
-            const mins = seconds / 60;
-            const hours = mins / 60;
-            const days = hours / 24;
-            const weeks = days / 7;
-            if (weeks <= 1) {
-                Level.findOne({ userId: id })
-                    .exec()
-                    .then((op) => {
-                        if (op !== null) {
-                            let exp = op.xp - 1;
-                            Level.updateOne({ userId: id }, { xp: exp }).then();
-                        }
-                    });
-            }
-        });
-
 
         const userId = message.author.id;
         const userLevel = await Level.findOne({ userId });
@@ -438,17 +399,32 @@ client.on("messageCreate", async(message) => {
         return;
     }
 });
-client.on("messageDelete", async(msg) => {
-    const id = msg.author.id;
+
+////////////////////////////////////////////Viacheslav
+
+function removePoints(id, amount) {
     Level.findOne({ userId: id })
         .exec()
         .then((op) => {
             if (op !== null) {
-                let exp = op.xp - 1;
-                Level.updateOne({ userId: id }, { xp: exp }).then();
+                let exp = op.xp - amount;
+                Level.updateOne({ userId: id }, { xp: exp}).then();
             }
         });
+}
+        
+client.on("messageDelete", async (msg) => {
+    //If msg life time is less than 1 week - remove points
+    const seconds = (Date.now() - msg.createdTimestamp) / 1000;
+    const mins = seconds / 60;
+    const hours = mins / 60;
+    const days = hours / 24;
+    const weeks = days / 7;
+    if (weeks <= 1) {
+        removePoints(msg.author.id, 1);
+    }
 });
+////////////////////////////////////////////Viacheslav
 
 //////////////////////////////////////////////////////////////////////////// Egor code
 
