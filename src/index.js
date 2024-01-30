@@ -282,6 +282,7 @@ antispam()
 client.on("messageCreate", async(message) => {
     // Перевірка, чи автор повідомлення не є ботом
     if (message.author.bot) return;
+
     useAntispam(message, antiSpam)
 
     // // Отримання ідентифікатора користувача та тексту повідомлення
@@ -392,6 +393,107 @@ client.on("messageCreate", async(message) => {
     //         }, 1000);
         // }
 
+
+    // Отримання ідентифікатора користувача та тексту повідомлення
+    const userId = message.author.id;
+    const content = message.content;
+
+    try {
+        // Отримання часу останнього повідомлення користувача
+        const lastMessageTime = userCooldowns.get(userId) || 0;
+        const currentTime = Date.now();
+
+        // Збереження нового повідомлення в базі даних
+        const newMessage = new messages({
+            userId: userId,
+            message: content,
+        });
+        await newMessage.save();
+        console.log(`User wrote: ${content}`);
+
+        // Перевірка наявності користувача в списку cooldowns
+        if (!userCooldowns.has(userId)) {
+            // Додавання користувача до списку cooldowns та встановлення таймауту
+            userCooldowns.set(userId, currentTime);
+
+            setTimeout(async() => {
+                // Отримання кількості аналогічних повідомлень користувача
+                const countOfSameMessages = await messages.countDocuments({
+                    userId: userId,
+                    message: content,
+                });
+
+                // Отримання повідомлень користувача на каналі
+                const userMessages = await message.channel.messages.fetch({ limit: 100 });
+                // Фільтрація спам-повідомлень користувача
+                const userSpamMessages = userMessages.filter((msg) => msg.author.id === userId && msg.content === content && msg.id !== message.id);
+
+                // Видалення спам-повідомлень
+                userSpamMessages.forEach(async(msg) => {
+                    try {
+                        await msg.delete();
+                    } catch (error) {
+                        console.error("Error deleting message:", error);
+                    }
+                });
+
+                // Визначення дій в залежності від кількості аналогічних повідомлень
+                if (countOfSameMessages >= antiSpam.warnThreshold) {
+                    switch (true) {
+                        case countOfSameMessages >= antiSpam.banTreshold:
+
+                            message.channel.send(antiSpam.banMessage);
+                            // Отримання об'єкта користувача
+                            // const bannedUser = message.guild.members.cache.get(userId);
+                            // // Блокування користувача на сервері
+                            // bannedUser.ban({ reason: 'Excessive spam' });
+                            break;
+                        case countOfSameMessages >= antiSpam.kickTreshold:
+
+                            // message.channel.send(antiSpam.kickMessage);
+                            // const kickedUser = message.guild.members.cache.get(userId);
+                            // // Вилучення користувача з серверу
+                            // kickedUser.kick({ reason: 'Excessive spam' });
+                            break;
+                        case countOfSameMessages >= antiSpam.muteTreshold:
+                            // Встановлення ролі "Muted" та часу мута
+                            const lastMuteTime = userMuteCooldowns.get(userId) || 0;
+                            const muteCooldown = 60 * 1000; // 1 хвилина
+
+                            if (currentTime - lastMuteTime > muteCooldown) {
+                                const muteRole = message.guild.roles.cache.find(role => role.name === 'Muted');
+                                if (muteRole) {
+                                    const member = message.guild.members.cache.get(userId);
+                                    if (member) {
+                                        member.roles.add(muteRole);
+                                        message.channel.send(`<@${userId}> ${antiSpam.muteMessage}`);
+
+                                        userMuteCooldowns.set(userId, currentTime);
+
+                                        // Зняття ролі "Muted" після вказаного часу
+                                        setTimeout(() => {
+                                            member.roles.remove(muteRole);
+                                        }, antiSpam.unMuteTime * 1000);
+                                    }
+                                }
+                            }
+                            break;
+                        case countOfSameMessages >= antiSpam.warnThreshold:
+                            // Надсилання попередження та віднімання деякої кількості досвіду (XP)
+                            message.channel.send(antiSpam.warnMessage);
+                            removePoints(message.author.id, 5);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                // Видалення користувача зі списку cooldowns
+                userCooldowns.delete(userId);
+            }, 1000);
+        }
+
+
         // Додавання користувача до списку cooldowns
         // userCooldowns.set(userId, currentTime);
     // } catch (error) {
@@ -413,6 +515,7 @@ client.on("messageCreate", async(message) => {
     if (message.author.bot || !message.content) return;
 imageMessage(message)
     // Перевірка, чи є прикріплені файли (фото)
+
     // if (message.attachments.size > 0) {
     //     client.on("messageDelete", async(msg) => {
     //         const id = msg.author.id;
@@ -472,7 +575,49 @@ client.on("messageDelete", async (msg) => {
     //             Level.updateOne({ userId: id }, { xp: exp }).then();
     //         }
     //     });
+
+    if (message.attachments.size > 0) {
+        removePoints(message.author.id, 1);
+
+        message.reply("Вам не нараховано XP через відправлене фото.");
+
+        const userId = message.author.id;
+        const userLevel = await Level.findOne({ userId });
+        if (userLevel !== null) {
+            const exp = userLevel.xp - 1;
+            await Level.updateOne({ userId: userId }, { xp: exp });
+            console.log(`Зменшено XP користувача ${userId} через відправлене фото.`);
+        }
+
+        return;
+    }
 });
+
+////////////////////////////////////////////Viacheslav
+
+function removePoints(id, amount) {
+    Level.findOne({ userId: id })
+        .exec()
+        .then((op) => {
+            if (op !== null) {
+                let exp = op.xp - amount;
+                Level.updateOne({ userId: id }, { xp: exp}).then();
+            }
+        });
+}
+        
+client.on("messageDelete", async (msg) => {
+    //If msg life time is less than 1 week - remove points
+    const seconds = (Date.now() - msg.createdTimestamp) / 1000;
+    const mins = seconds / 60;
+    const hours = mins / 60;
+    const days = hours / 24;
+    const weeks = days / 7;
+    if (weeks <= 1) {
+        removePoints(msg.author.id, 1);
+    }
+});
+////////////////////////////////////////////Viacheslav
 
 //////////////////////////////////////////////////////////////////////////// Egor code
 
