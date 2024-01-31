@@ -36,6 +36,24 @@ module.exports = {
             return;
         }
 
-        await interaction.editReply(`Your xp is ${fetchedLevel.xp} `)
+        await interaction.editReply(`Your xp is ${fetchedLevel.xp}, Your level is ${fetchedLevel.level} `)
+       
+        
+   
+        if(!interaction.inGuild()){
+            interaction.reply("You can't run this command inside a server");
+            return;
+        }
+
+        // await interaction.deferReply();
+
+     
+
+
+       
     }
-};
+
+
+    }
+    
+
