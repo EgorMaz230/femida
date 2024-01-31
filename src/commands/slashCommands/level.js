@@ -31,11 +31,11 @@ module.exports = {
 
         if(!fetchedLevel){
             interaction.editReply(
-                mentionedUserId ? `${targetUserObj.user.tag} doesn't have any levels yet. Try again when they chat a little more` : `You don't have any levels yet. Chat a little more and try again`
+                mentionedUserId ? `${targetUserObj.user.tag} doesn't have any level yet. Try again when they chat a little more` : `You don't have any level yet. Chat a little more and try again`
             );
             return;
         }
 
-        await interaction.editReply(`Your level is ${fetchedLevel.level} `)
+        await interaction.editReply(mentionedUserId != undefined ? `${targetUserObj.user.tag} level is ${fetchedLevel.level}` : `Your level is ${fetchedLevel.level} `)
     }
 };

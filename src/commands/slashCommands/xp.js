@@ -36,6 +36,6 @@ module.exports = {
             return;
         }
 
-        await interaction.editReply(`Your xp is ${fetchedLevel.xp} `)
+        await interaction.editReply(mentionedUserId != undefined ? `${targetUserObj.user.tag} xp is ${fetchedLevel.xp}` : `Your xp is ${fetchedLevel.xp} `)
     }
 };
