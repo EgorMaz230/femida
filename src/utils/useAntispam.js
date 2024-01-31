@@ -1,10 +1,9 @@
-const userMuteCooldowns = new Map();
-const userCooldowns = new Map();
+
 const Level = require("../models/Level");
  const messages = require("../models/messages.js");
 
-module.exports = async (message, antiSpam) => {
-     // Отримання ідентифікатора користувача та тексту повідомлення
+module.exports = async (message, antiSpam, userCooldowns, userMuteCooldowns) => {
+    // Отримання ідентифікатора користувача та тексту повідомлення
     const userId = message.author.id;
     const content = message.content;
 
@@ -26,7 +25,7 @@ module.exports = async (message, antiSpam) => {
             // Додавання користувача до списку cooldowns та встановлення таймауту
             userCooldowns.set(userId, currentTime);
 
-            setTimeout(async() => {
+            setTimeout(async () => {
                 // Отримання кількості аналогічних повідомлень користувача
                 const countOfSameMessages = await messages.countDocuments({
                     userId: userId,
@@ -39,7 +38,7 @@ module.exports = async (message, antiSpam) => {
                 const userSpamMessages = userMessages.filter((msg) => msg.author.id === userId && msg.content === content && msg.id !== message.id);
 
                 // Видалення спам-повідомлень
-                userSpamMessages.forEach(async(msg) => {
+                userSpamMessages.forEach(async (msg) => {
                     try {
                         await msg.delete();
                     } catch (error) {
@@ -110,11 +109,8 @@ module.exports = async (message, antiSpam) => {
                 // Видалення користувача зі списку cooldowns
                 userCooldowns.delete(userId);
             }, 1000);
-              }
-
-        // Додавання користувача до списку cooldowns
-        userCooldowns.set(userId, currentTime);
+        }
     } catch (error) {
-        console.error("Error saving message:", error);
+        console.log(error)
     }
 }
