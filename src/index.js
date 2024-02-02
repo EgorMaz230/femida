@@ -73,12 +73,12 @@ const antiSpam = {
 antiSpam.messageCount = new Map();
 
 
-client.on("ready", async () => {
+client.on("ready", async() => {
     database(client);
 });
 
 
-client.on(Events.InteractionCreate, async (interaction) => {
+client.on(Events.InteractionCreate, async(interaction) => {
     if (!interaction.isChatInputCommand()) return;
     addNewMember(interaction)
 
@@ -106,10 +106,27 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
 });
 
+const messages = require("./models/messages.js");
+// Функція для очищення бази даних
+async function clearDatabase() {
+    try {
+        await messages.deleteMany({})
+        console.log("База даних очищена.");
+    } catch (error) {
+        console.error("Помилка при очищенні бази даних:", error);
+    }
+}
+
+// Функція для запуску таймера очищення бази даних
+function startClearDatabaseInterval() {
+    clearDatabaseInterval = setInterval(clearDatabase, 60000);
+}
 
 
-client.on("messageCreate", async (message) => {
+client.on("messageCreate", async(message) => {
     if (message.author.bot) return;
+    // Запускаємо таймер очищення бази даних при старті програми
+    startClearDatabaseInterval();
 
     accrualPoints(message);
     useAntispam(message, antiSpam, userCooldowns, userMuteCooldowns);
@@ -118,7 +135,9 @@ client.on("messageCreate", async (message) => {
     badWords(message);
 });
 
-client.on(Events.GuildMemberUpdate, async (oldMember, newMember) => {
+startClearDatabaseInterval();
+
+client.on(Events.GuildMemberUpdate, async(oldMember, newMember) => {
     whenBoost(oldMember, newMember, client);
 });
 
@@ -129,7 +148,7 @@ client.on("voiceStateUpdate", (oldState, newState) => {
 const userMuteCooldowns = new Map();
 const userCooldowns = new Map();
 
-client.on("messageDelete", async (msg) => {
+client.on("messageDelete", async(msg) => {
     whenMessageDelete(msg);
 });
 
