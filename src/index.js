@@ -142,7 +142,7 @@ client.on(Events.GuildMemberUpdate, async(oldMember, newMember) => {
 });
 
 client.on("voiceStateUpdate", (oldState, newState) => {
-    voiceStateUpdate(client, newState);
+    voiceStateUpdate(oldState, newState, client);
 });
 
 const userMuteCooldowns = new Map();
