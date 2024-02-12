@@ -17,6 +17,7 @@ const database = require("./utils/database.js");
 const addNewMember = require("./utils/addNewMember.js");
 const whenBoost = require("./utils/whenBoost.js");
 const voiceStateUpdate = require("./utils/voiseStateUpdate.js");
+const sendRatingEveryMonth = require("./utils/sendRatingEveryMonth.js");
 const Level = require("./models/Level");
 const checkRoleInVc = require("./utils/check-role-in-vc.js");
 config();
@@ -137,6 +138,7 @@ startClearDatabaseInterval();
 
 client.on(Events.GuildMemberUpdate, async (oldMember, newMember) => {
   whenBoost(oldMember, newMember, client);
+
 });
 
 client.on("voiceStateUpdate", (oldState, newState) => {
@@ -145,13 +147,8 @@ client.on("voiceStateUpdate", (oldState, newState) => {
 
 client.on("voiceStateUpdate", (oldState, newState) => {
   checkRoleInVc(oldState, newState, client);
-  //   const test = newState.guild.roles.cache.get("1192066790717661245");
-  //   console.log("newstate", newState.member);
-
-//   if (newState.member.roles.cache.has("1192066790717661245")) {
-//     console.log("Role naidena");
-//   }
 });
+
 
 const userMuteCooldowns = new Map();
 const userCooldowns = new Map();
@@ -159,5 +156,8 @@ const userCooldowns = new Map();
 client.on("messageDelete", async (msg) => {
   whenMessageDelete(msg);
 });
+
+sendRatingEveryMonth(client);
+
 
 client.login(TOKEN);
