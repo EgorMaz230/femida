@@ -19,6 +19,7 @@ const whenBoost = require("./utils/whenBoost.js");
 const voiceStateUpdate = require("./utils/voiseStateUpdate.js");
 const sendRatingEveryMonth = require("./utils/sendRatingEveryMonth.js");
 const Level = require("./models/Level");
+const checkRoleInVc = require("./utils/check-role-in-vc.js");
 config();
 
 const TOKEN = process.env.TOKEN;
@@ -137,11 +138,17 @@ startClearDatabaseInterval();
 
 client.on(Events.GuildMemberUpdate, async (oldMember, newMember) => {
   whenBoost(oldMember, newMember, client);
+
 });
 
 client.on("voiceStateUpdate", (oldState, newState) => {
   voiceStateUpdate(oldState, newState, client);
 });
+
+client.on("voiceStateUpdate", (oldState, newState) => {
+  checkRoleInVc(oldState, newState, client);
+});
+
 
 const userMuteCooldowns = new Map();
 const userCooldowns = new Map();
@@ -151,5 +158,6 @@ client.on("messageDelete", async (msg) => {
 });
 
 sendRatingEveryMonth(client);
+
 
 client.login(TOKEN);
