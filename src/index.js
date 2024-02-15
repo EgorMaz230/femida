@@ -9,6 +9,8 @@ const { config } = require("dotenv");
 const path = require("node:path");
 const fs = require("node:fs");
 const accrualPoints = require("./utils/messages.js");
+const fetchInvites = require("./utils/fetchInvites.js");
+const updateInvites = require("./utils/updateInvites.js");
 const useAntispam = require("./utils/useAntispam.js");
 const imageMessage = require("./utils/imageMessage.js");
 const whenMessageDelete = require("./utils/whenMessageDelete.js");
@@ -31,6 +33,7 @@ const client = new Client({
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildVoiceStates,
+    GatewayIntentBits.GuildInvites,
   ],
   partials: [Partials.Channel],
 });
@@ -74,8 +77,15 @@ const antiSpam = {
 
 antiSpam.messageCount = new Map();
 
-client.on("ready", async () => {
+
+client.on("ready", async (op) => {
   database(client);
+  fetchInvites(op, client);
+});
+
+client.on("guildMemberAdd", async (person) => {
+  updateInvites(person, client);
+  
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
@@ -148,6 +158,8 @@ client.on("voiceStateUpdate", (oldState, newState) => {
 client.on("voiceStateUpdate", (oldState, newState) => {
   checkRoleInVc(oldState, newState, client);
 });
+
+
 
 
 const userMuteCooldowns = new Map();
