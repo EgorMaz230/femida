@@ -18,7 +18,7 @@ module.exports = async (message, antiSpam, userCooldowns, userMuteCooldowns) => 
             message: content,
         });
         await newMessage.save();
-        console.log(`User wrote: ${content}`);
+        // console.log(`User wrote: ${content}`);
 
         // Перевірка наявності користувача в списку cooldowns
         if (!userCooldowns.has(userId)) {

@@ -1,4 +1,12 @@
+const limitPoints = require("./utils/limitPoints.js");
+
 const {
+    Client,
+    GatewayIntentBits,
+    Partials,
+    Events,
+    Collection,
+    UserSelectMenuBuilder,
   Client,
   GatewayIntentBits,
   Partials,
@@ -137,14 +145,29 @@ client.on("messageCreate", async (message) => {
   // Запускаємо таймер очищення бази даних при старті програми
   startClearDatabaseInterval();
 
+
+client.on("messageCreate", async(message) => {
+    if (message.author.bot) return;
+    
+    // Запускаємо таймер очищення бази даних при старті програми
+    startClearDatabaseInterval();
+
+    accrualPoints(message);
+    useAntispam(message, antiSpam, userCooldowns, userMuteCooldowns);
+    imageMessage(message);
+    whenMessageDelete(message);
+    badWords(message);
+
   accrualPoints(message);
   useAntispam(message, antiSpam, userCooldowns, userMuteCooldowns);
   imageMessage(message);
   whenMessageDelete(message);
   badWords(message);
+
 });
 
 startClearDatabaseInterval();
+limitPoints();
 
 client.on(Events.GuildMemberUpdate, async (oldMember, newMember) => {
   whenBoost(oldMember, newMember, client);
