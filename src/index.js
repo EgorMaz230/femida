@@ -1,9 +1,12 @@
+const limitPoints = require("./utils/limitPoints.js");
+
 const {
     Client,
     GatewayIntentBits,
     Partials,
     Events,
     Collection,
+    UserSelectMenuBuilder,
 } = require("discord.js");
 const { config } = require("dotenv");
 const path = require("node:path");
@@ -125,6 +128,7 @@ function startClearDatabaseInterval() {
 
 client.on("messageCreate", async(message) => {
     if (message.author.bot) return;
+    
     // Запускаємо таймер очищення бази даних при старті програми
     startClearDatabaseInterval();
 
@@ -136,6 +140,7 @@ client.on("messageCreate", async(message) => {
 });
 
 startClearDatabaseInterval();
+limitPoints();
 
 client.on(Events.GuildMemberUpdate, async(oldMember, newMember) => {
     whenBoost(oldMember, newMember, client);
