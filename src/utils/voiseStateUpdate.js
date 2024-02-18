@@ -4,7 +4,7 @@ module.exports = async (oldState, newState, client) => {
   if (newState.channelId) {
     if (!oldState.channelId && newState.channelId) {
       const voiceChannels = client.channels.cache.filter(
-        (elem) => elem.type === 2
+        (elem) => elem.type === 2 || elem.type === 13
       );
       const arrObj = [];
 
@@ -50,7 +50,7 @@ module.exports = async (oldState, newState, client) => {
           const updtaeLevel = people.level + 1;
           const addXp = people.xp - 150;
           await Level.findOneAndUpdate(
-            { userId: user },
+            { userId: newState.id },
             { level: updtaeLevel, xp: addXp }
           );
         }

@@ -9,6 +9,6 @@ module.exports = async (client) => {
       .fetch("1192080421677191288")
       .then((channel) => channel.send({ embeds: [ratingEmbed] }));
   };
-  const sendRatingJob = new cron.CronJob("00 00 10 * * *", sendRatingFn);
+  const sendRatingJob = new cron.CronJob("20 * * * * *", sendRatingFn);
   sendRatingJob.start();
 }
