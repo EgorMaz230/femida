@@ -1,5 +1,6 @@
 const { Schema, model } = require("mongoose");
 
+
 const levelSchema = new Schema({
     userId: {
         type: String,
@@ -19,6 +20,7 @@ const levelSchema = new Schema({
     },
     currentXp: {
         type: Number,
+        max: 100,
         default: 0
     }
 });
