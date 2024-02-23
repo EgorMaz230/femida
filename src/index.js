@@ -1,10 +1,10 @@
 const limitPoints = require("./utils/limitPoints.js");
 const {
-    Client,
-    GatewayIntentBits,
-    Partials,
-    Events,
-    Collection
+  Client,
+  GatewayIntentBits,
+  Partials,
+  Events,
+  Collection,
 } = require("discord.js");
 const { config } = require("dotenv");
 const path = require("node:path");
@@ -78,7 +78,6 @@ const antiSpam = {
 
 antiSpam.messageCount = new Map();
 
-
 client.on("ready", async (op) => {
   database(client);
   fetchInvites(op, client);
@@ -86,7 +85,6 @@ client.on("ready", async (op) => {
 
 client.on("guildMemberAdd", async (person) => {
   updateInvites(person, client);
-  
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
@@ -137,18 +135,12 @@ client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
   // Запускаємо таймер очищення бази даних при старті програми
   startClearDatabaseInterval();
-})
+});
 
-client.on("messageCreate", async(message) => {
-    if (message.author.bot) return;
-    // Запускаємо таймер очищення бази даних при старті програми
-    startClearDatabaseInterval();
-
-    accrualPoints(message);
-    useAntispam(message, antiSpam, userCooldowns, userMuteCooldowns);
-    imageMessage(message);
-    whenMessageDelete(message);
-    badWords(message);
+client.on("messageCreate", async (message) => {
+  if (message.author.bot) return;
+  // Запускаємо таймер очищення бази даних при старті програми
+  startClearDatabaseInterval();
 
   accrualPoints(message);
   useAntispam(message, antiSpam, userCooldowns, userMuteCooldowns);
@@ -156,6 +148,11 @@ client.on("messageCreate", async(message) => {
   whenMessageDelete(message);
   badWords(message);
 
+  accrualPoints(message);
+  useAntispam(message, antiSpam, userCooldowns, userMuteCooldowns);
+  imageMessage(message);
+  whenMessageDelete(message);
+  badWords(message);
 });
 
 startClearDatabaseInterval();
@@ -163,7 +160,6 @@ limitPoints();
 
 client.on(Events.GuildMemberUpdate, async (oldMember, newMember) => {
   whenBoost(oldMember, newMember, client);
-
 });
 
 client.on("voiceStateUpdate", (oldState, newState) => {
@@ -174,9 +170,6 @@ client.on("voiceStateUpdate", (oldState, newState) => {
   checkRoleInVc(oldState, newState, client);
 });
 
-
-
-
 const userMuteCooldowns = new Map();
 const userCooldowns = new Map();
 
@@ -185,6 +178,5 @@ client.on("messageDelete", async (msg) => {
 });
 
 sendRatingEveryMonth(client);
-
 
 client.login(TOKEN);

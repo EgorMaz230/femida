@@ -1,4 +1,5 @@
 const Level = require("../models/Level");
+const updateLevel = require("./updateLevel");
 
 module.exports = async function checkRoleInVc(oldState, newState, client) {
   if (newState.channelId) {
@@ -24,16 +25,17 @@ module.exports = async function checkRoleInVc(oldState, newState, client) {
           const userIds = members.map((member) => member.user.id);
           userIds.forEach(async (user) => {
             const people = await Level.findOne({ userId: user });
-            const updateXp = people.xp + 30;
-            await Level.findOneAndUpdate({ userId: user }, { xp: updateXp });
-            if (people.xp >= 150) {
-              const updtaeLevel = people.level + 1;
-              const addXp = people.xp - 150;
-              await Level.findOneAndUpdate(
-                { userId: user },
-                { level: updtaeLevel, xp: addXp }
-              );
-            }
+            const updateXp = people.currentXp + 30;
+            await Level.findOneAndUpdate({ userId: user }, { currentXp: updateXp });
+            updateLevel(people, user);
+            // if (people.xp >= 150) {
+            //   const updtaeLevel = people.level + 1;
+            //   const addXp = people.xp - 150;
+            //   await Level.findOneAndUpdate(
+            //     { userId: user },
+            //     { level: updtaeLevel, xp: addXp }
+            //   );
+            // }
           });
         } else {
           const userIds = members.map((member) => member.user.id);
@@ -44,19 +46,20 @@ module.exports = async function checkRoleInVc(oldState, newState, client) {
                 .roles.cache.has("1192066790717661245")
             ) {
               const people = await Level.findOne({ userId: newState.id });
-              const updateXp = people.xp + 30;
+              const updateXp = people.currentXp + 30;
               await Level.findOneAndUpdate(
                 { userId: newState.id },
-                { xp: updateXp }
+                { currentXp: updateXp }
               );
-              if (people.xp >= 150) {
-                const updtaeLevel = people.level + 1;
-                const addXp = people.xp - 150;
-                await Level.findOneAndUpdate(
-                  { userId: newState.id },
-                  { level: updtaeLevel, xp: addXp }
-                );
-              }
+              updateLevel(people, user);
+              // if (people.xp >= 150) {
+              //   const updtaeLevel = people.level + 1;
+              //   const addXp = people.xp - 150;
+              //   await Level.findOneAndUpdate(
+              //     { userId: newState.id },
+              //     { level: updtaeLevel, xp: addXp }
+              //   );
+              // }
             }
           });
         }
