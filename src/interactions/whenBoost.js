@@ -1,4 +1,5 @@
 const Level = require("../models/Level");
+const updateLevel = require("./updateLevel");
 const { EmbedBuilder } = require("discord.js");
 
 module.exports = async (oldMember, newMember, client) => {
@@ -13,23 +14,23 @@ module.exports = async (oldMember, newMember, client) => {
 
       let userData = await Level.findOne({ userId: userId });
       console.log(userData);
-      
+
       if (userData === null) {
         userData = new Level({
           userId: userId,
           guildId: newMember.guild.id,
           xp: 0,
           level: 1,
+          currentXp: 0,
         });
 
         await userData.save();
-        
       }
 
       const updatedXp = userData.xp + 50;
 
       await Level.findOneAndUpdate({ userId: userId }, { xp: updatedXp });
-
+      updateLevel(userData, userId);
       //? Sending a message of boost into the system channel
 
       const titleChoose = [
