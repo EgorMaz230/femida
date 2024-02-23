@@ -20,15 +20,19 @@ module.exports = async (oldMember, newMember, client) => {
           guildId: newMember.guild.id,
           xp: 0,
           level: 1,
+          currentXp: 0,
         });
 
         await userData.save();
         
       }
 
-      const updatedXp = userData.xp + 50;
+      const updatedXp = userData.currentXp + 50;
 
-      await Level.findOneAndUpdate({ userId: userId }, { xp: updatedXp });
+      await Level.findOneAndUpdate(
+        { userId: userId },
+        { currentXp: updatedXp }
+      );
 
       //? Sending a message of boost into the system channel
 
