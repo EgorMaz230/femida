@@ -18,6 +18,6 @@ module.exports = async (msg) => {
     const days = hours / 24;
     const weeks = days / 7;
     if (weeks <= 1) {
-        removePoints(msg.author.id, 1);
+        removePoints(msg.author.id, 0.5);
     }
 }
