@@ -1,0 +1,1 @@
+module.exports = 12000; // 10 min

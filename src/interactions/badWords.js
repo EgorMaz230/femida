@@ -1,6 +1,6 @@
-const badWords = ["bad_word1", "bad_word2"];
-const mutedUsers = new Map();
-const muteDuration = 12000; // 10 min
+const badWords = require("../constants/badWords");
+const mutedUsers = require("../constants/newMap")
+const muteDuration = require("../constants/muteDuration")
 
 module.exports = async (message) => {
       const userId = message.author.id;

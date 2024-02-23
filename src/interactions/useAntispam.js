@@ -1,8 +1,11 @@
 
-const Level = require("../models/Level");
+const Level = require("../models/Level.js");
  const messages = require("../models/messages.js");
+ const antiSpam = require("../constants/antiSpam.js");
+ const userMuteCooldowns = require("../constants/newMap.js");
+ const userCooldowns = require("../constants/newMap.js")
 
-module.exports = async (message, antiSpam, userCooldowns, userMuteCooldowns) => {
+module.exports = async (message) => {
     // Отримання ідентифікатора користувача та тексту повідомлення
     const userId = message.author.id;
     const content = message.content;

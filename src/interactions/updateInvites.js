@@ -1,15 +1,15 @@
-const Level = require("../models/Level");
+const addPoints = require("../utils/addPoints");
 
-function addPoints(id, amount) {
-  Level.findOne({ userId: id })
-    .exec()
-    .then((op) => {
-      if (op !== null) {
-        let exp = op.xp + amount;
-        Level.updateOne({ userId: id }, { xp: exp }).then();
-      }
-    });
-}
+// function addPoints(id, amount) {
+//   Level.findOne({ userId: id })
+//     .exec()
+//     .then((op) => {
+//       if (op !== null) {
+//         let exp = op.xp + amount;
+//         Level.updateOne({ userId: id }, { xp: exp }).then();
+//       }
+//     });
+// }
 
 module.exports = async function updateInvites(person, client) {
   client.guilds.cache.each((guild) => {

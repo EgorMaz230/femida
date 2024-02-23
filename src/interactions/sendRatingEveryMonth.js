@@ -1,4 +1,4 @@
-const creatingRatingEmbed = require("./creatingRatingEmbed")
+const creatingRatingEmbed = require("../utils/creatingRatingEmbed")
 const cron = require("cron");
 
 module.exports = async (client) => {

@@ -1,14 +1,7 @@
 const Level = require("../models/Level");
 const db = require("mongoose");
+const sameLetters = require("../utils/sameLetters")
 
-function sameLetters(content) {
-  for (let i = 1; i < content.length;i++) {
-    if (content[i] !== content[i-1]) {
-      return true;
-    }
-  }
-  return false;
-}
 
 module.exports = async function accrualPoints(message) {
   if (message.content.length > 3 && !message.author.bot && sameLetters(message.content)) {
