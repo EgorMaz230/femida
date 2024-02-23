@@ -1,5 +1,3 @@
-<<<<<<< HEAD:src/interactions/useAntispam.js
-
 const Level = require("../models/Level.js");
  const messages = require("../models/messages.js");
  const antiSpam = require("../constants/antiSpam.js");
@@ -10,20 +8,6 @@ module.exports = async (message) => {
     // Отримання ідентифікатора користувача та тексту повідомлення
     const userId = message.author.id;
     const content = message.content;
-=======
-const Level = require("../models/Level");
-const messages = require("../models/messages.js");
-
-module.exports = async (
-  message,
-  antiSpam,
-  userCooldowns,
-  userMuteCooldowns
-) => {
-  // Отримання ідентифікатора користувача та тексту повідомлення
-  const userId = message.author.id;
-  const content = message.content;
->>>>>>> 6931b958790e74cfe3b5def5e30ba4432976c92c:src/utils/useAntispam.js
 
   try {
     // Отримання часу останнього повідомлення користувача
@@ -36,8 +20,7 @@ module.exports = async (
       message: content,
     });
     await newMessage.save();
-    // console.log(`User wrote: ${content}`);
-
+    
     // Перевірка наявності користувача в списку cooldowns
     if (!userCooldowns.has(userId)) {
       // Додавання користувача до списку cooldowns та встановлення таймауту

@@ -12,7 +12,6 @@ module.exports = async (client) => {
     ).displayName;
     return {
       name: userName,
-      // value: `XP: ${user.xp}\nLevel: ${user.level}`,
       __level: user.level,
       __xp: user.xp,
       inline: true,
