@@ -1,4 +1,8 @@
+<<<<<<< HEAD:src/interactions/sendRatingEveryMonth.js
+const creatingRatingEmbed = require("../utils/creatingRatingEmbed")
+=======
 const creatingRatingEmbed = require("./creatingRatingEmbed");
+>>>>>>> 6931b958790e74cfe3b5def5e30ba4432976c92c:src/utils/sendRatingEveryMonth.js
 const cron = require("cron");
 
 module.exports = async (client) => {

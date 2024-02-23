@@ -1,5 +1,9 @@
 const Level = require("../models/Level");
 const db = require("mongoose");
+<<<<<<< HEAD:src/interactions/messages.js
+const sameLetters = require("../utils/sameLetters")
+
+=======
 const updateLevel = require("./updateLevel");
 
 function sameLetters(content) {
@@ -10,6 +14,7 @@ function sameLetters(content) {
   }
   return false;
 }
+>>>>>>> 6931b958790e74cfe3b5def5e30ba4432976c92c:src/utils/messages.js
 
 module.exports = async function accrualPoints(message) {
   if (

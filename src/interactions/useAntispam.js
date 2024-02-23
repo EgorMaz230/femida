@@ -1,3 +1,16 @@
+<<<<<<< HEAD:src/interactions/useAntispam.js
+
+const Level = require("../models/Level.js");
+ const messages = require("../models/messages.js");
+ const antiSpam = require("../constants/antiSpam.js");
+ const userMuteCooldowns = require("../constants/newMap.js");
+ const userCooldowns = require("../constants/newMap.js")
+
+module.exports = async (message) => {
+    // Отримання ідентифікатора користувача та тексту повідомлення
+    const userId = message.author.id;
+    const content = message.content;
+=======
 const Level = require("../models/Level");
 const messages = require("../models/messages.js");
 
@@ -10,6 +23,7 @@ module.exports = async (
   // Отримання ідентифікатора користувача та тексту повідомлення
   const userId = message.author.id;
   const content = message.content;
+>>>>>>> 6931b958790e74cfe3b5def5e30ba4432976c92c:src/utils/useAntispam.js
 
   try {
     // Отримання часу останнього повідомлення користувача

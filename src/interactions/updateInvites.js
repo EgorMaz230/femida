@@ -1,3 +1,17 @@
+<<<<<<< HEAD:src/interactions/updateInvites.js
+const addPoints = require("../utils/addPoints");
+
+// function addPoints(id, amount) {
+//   Level.findOne({ userId: id })
+//     .exec()
+//     .then((op) => {
+//       if (op !== null) {
+//         let exp = op.xp + amount;
+//         Level.updateOne({ userId: id }, { xp: exp }).then();
+//       }
+//     });
+// }
+=======
 const Level = require("../models/Level");
 const updateLevel = require("./updateLevel");
 
@@ -12,6 +26,7 @@ function addPoints(id, amount) {
       }
     });
 }
+>>>>>>> 6931b958790e74cfe3b5def5e30ba4432976c92c:src/utils/updateInvites.js
 
 module.exports = async function updateInvites(person, client) {
   client.guilds.cache.each((guild) => {

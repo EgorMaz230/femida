@@ -1,5 +1,12 @@
 const limitPoints = require("./utils/limitPoints.js");
+
 const {
+    Client,
+    GatewayIntentBits,
+    Partials,
+    Events,
+    Collection,
+    UserSelectMenuBuilder,
   Client,
   GatewayIntentBits,
   Partials,
@@ -9,23 +16,30 @@ const {
 const { config } = require("dotenv");
 const path = require("node:path");
 const fs = require("node:fs");
-const accrualPoints = require("./utils/messages.js");
-const fetchInvites = require("./utils/fetchInvites.js");
-const updateInvites = require("./utils/updateInvites.js");
-const useAntispam = require("./utils/useAntispam.js");
-const imageMessage = require("./utils/imageMessage.js");
-const whenMessageDelete = require("./utils/whenMessageDelete.js");
-const badWords = require("./utils/badWords.js");
-const database = require("./utils/database.js");
-const addNewMember = require("./utils/addNewMember.js");
-const whenBoost = require("./utils/whenBoost.js");
-const voiceStateUpdate = require("./utils/voiseStateUpdate.js");
-const sendRatingEveryMonth = require("./utils/sendRatingEveryMonth.js");
-const Level = require("./models/Level");
-const checkRoleInVc = require("./utils/check-role-in-vc.js");
-config();
 
-const TOKEN = process.env.TOKEN;
+// імпорти функцій
+const addNewMember = require("./interactions/addNewMember.js");
+const accrualPoints = require("./interactions/messages.js");
+const badWords = require("./interactions/badWords.js");
+const checkRoleInVc = require("./interactions/check-role-in-vc.js");
+const database = require("./interactions/database.js");
+const fetchInvites = require("./interactions/fetchInvites.js");
+const getInteractionCommands = require("./interactions/getInteractionCommands.js")
+const imageMessage = require("./interactions/imageMessage.js");
+const limitPoints = require("./interactions/limitPoints.js");
+const sendRatingEveryMonth = require("./interactions/sendRatingEveryMonth.js");
+const startClearDatabaseInterval = require("./interactions/startClearDatabase.js")
+const updateInvites = require("./interactions/updateInvites.js");
+const useAntispam = require("./interactions/useAntispam.js");
+const voiceStateUpdate = require("./interactions/voiseStateUpdate.js");
+const whenBoost = require("./interactions/whenBoost.js");
+const whenMessageDelete = require("./interactions/whenMessageDelete.js");
+
+// імпорт констант
+
+const antiSpam = require('./constants/antiSpam.js')
+
+// ініціалізація клієнту
 
 const client = new Client({
   intents: [
@@ -38,6 +52,8 @@ const client = new Client({
   ],
   partials: [Partials.Channel],
 });
+
+// зчитування папок із слеш функціями 
 
 client.commands = new Collection();
 
@@ -78,10 +94,20 @@ const antiSpam = {
 
 antiSpam.messageCount = new Map();
 
+
 client.on("ready", async (op) => {
   database(client);
   fetchInvites(op, client);
 });
+
+limitPoints();
+sendRatingEveryMonth(client);
+startClearDatabaseInterval()
+antiSpam.messageCount = new Map();
+
+const TOKEN = process.env.TOKEN;
+
+// взаємодія з юзером
 
 client.on("guildMemberAdd", async (person) => {
   updateInvites(person, client);
@@ -135,12 +161,19 @@ client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
   // Запускаємо таймер очищення бази даних при старті програми
   startClearDatabaseInterval();
-});
 
-client.on("messageCreate", async (message) => {
-  if (message.author.bot) return;
-  // Запускаємо таймер очищення бази даних при старті програми
-  startClearDatabaseInterval();
+
+client.on("messageCreate", async(message) => {
+    if (message.author.bot) return;
+    
+    // Запускаємо таймер очищення бази даних при старті програми
+    startClearDatabaseInterval();
+
+    accrualPoints(message);
+    useAntispam(message, antiSpam, userCooldowns, userMuteCooldowns);
+    imageMessage(message);
+    whenMessageDelete(message);
+    badWords(message);
 
   accrualPoints(message);
   useAntispam(message, antiSpam, userCooldowns, userMuteCooldowns);
@@ -148,11 +181,6 @@ client.on("messageCreate", async (message) => {
   whenMessageDelete(message);
   badWords(message);
 
-  accrualPoints(message);
-  useAntispam(message, antiSpam, userCooldowns, userMuteCooldowns);
-  imageMessage(message);
-  whenMessageDelete(message);
-  badWords(message);
 });
 
 startClearDatabaseInterval();
@@ -164,11 +192,11 @@ client.on(Events.GuildMemberUpdate, async (oldMember, newMember) => {
 
 client.on("voiceStateUpdate", (oldState, newState) => {
   voiceStateUpdate(oldState, newState, client);
-});
-
-client.on("voiceStateUpdate", (oldState, newState) => {
   checkRoleInVc(oldState, newState, client);
 });
+
+
+
 
 const userMuteCooldowns = new Map();
 const userCooldowns = new Map();
@@ -178,5 +206,6 @@ client.on("messageDelete", async (msg) => {
 });
 
 sendRatingEveryMonth(client);
+
 
 client.login(TOKEN);
