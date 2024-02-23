@@ -1,4 +1,5 @@
 const Level = require("../models/Level");
+const updateLevel = require("./updateLevel");
 
 function addPoints(id, amount) {
   Level.findOne({ userId: id })
@@ -7,6 +8,7 @@ function addPoints(id, amount) {
       if (op !== null) {
         let exp = op.xp + amount;
         Level.updateOne({ userId: id }, { xp: exp }).then();
+        updateLevel(op, id);
       }
     });
 }
