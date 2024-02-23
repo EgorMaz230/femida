@@ -1,16 +1,5 @@
 const removePoints = require("../utils/removePoints");
 
-// function removePoints(id, amount) {
-//     Level.findOne({ userId: id })
-//         .exec()
-//         .then((op) => {
-//             if (op !== null) {
-//                 let exp = op.xp - amount;
-//                 Level.updateOne({ userId: id }, { xp: exp }).then();
-//             }
-//         });
-// }
-
 module.exports = async (msg) => {
     const seconds = (Date.now() - msg.createdTimestamp) / 1000;
     const mins = seconds / 60;

@@ -20,21 +20,12 @@ module.exports = async (oldState, newState, client) => {
           .catch((err) => console.log(err));
 
         const members = voiceChannel.members;
-        // console.log('members', members);
 
         const userIds = members.map((member) => member.user.id);
         userIds.forEach(async (user) => {
           const people = await Level.findOne({ userId: user });
           const updateXp = people.currentXp + 20;
           await Level.findOneAndUpdate({ userId: user }, { currentXp: updateXp });
-          // if (people.xp >= 150) {
-          //   const updtaeLevel = people.level + 1;
-          //   const addXp = people.xp - 150;
-          //   await Level.findOneAndUpdate(
-          //     { userId: user },
-          //     { level: updtaeLevel, xp: addXp }
-          //   );
-          // }
           updateLevel(people, user);
           console.log("people", people);
         });

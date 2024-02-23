@@ -28,14 +28,6 @@ module.exports = async function checkRoleInVc(oldState, newState, client) {
             const updateXp = people.currentXp + 30;
             await Level.findOneAndUpdate({ userId: user }, { currentXp: updateXp });
             updateLevel(people, user);
-            // if (people.xp >= 150) {
-            //   const updtaeLevel = people.level + 1;
-            //   const addXp = people.xp - 150;
-            //   await Level.findOneAndUpdate(
-            //     { userId: user },
-            //     { level: updtaeLevel, xp: addXp }
-            //   );
-            // }
           });
         } else {
           const userIds = members.map((member) => member.user.id);
@@ -52,14 +44,6 @@ module.exports = async function checkRoleInVc(oldState, newState, client) {
                 { currentXp: updateXp }
               );
               updateLevel(people, user);
-              // if (people.xp >= 150) {
-              //   const updtaeLevel = people.level + 1;
-              //   const addXp = people.xp - 150;
-              //   await Level.findOneAndUpdate(
-              //     { userId: newState.id },
-              //     { level: updtaeLevel, xp: addXp }
-              //   );
-              // }
             }
           });
         }
