@@ -11,6 +11,6 @@ module.exports = async (client) => {
         channel.send({ embeds: [ratingEmbed], fetchReply: true })
       );
   };
-  const sendRatingJob = new cron.CronJob("20 * * * * *", sendRatingFn);
+  const sendRatingJob = new cron.CronJob("20 20 * * * *", sendRatingFn);
   sendRatingJob.start();
 };
