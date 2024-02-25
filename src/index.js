@@ -1,4 +1,4 @@
-const limitPoints = require("./utils/limitPoints.js");
+const limitPoints = require("./interactions/limitPoints.js");
 
 const {
     Client,
@@ -20,7 +20,7 @@ const database = require("./interactions/database.js");
 const fetchInvites = require("./interactions/fetchInvites.js");
 const getInteractionCommands = require("./interactions/getInteractionCommands.js")
 const imageMessage = require("./interactions/imageMessage.js");
-const limitPoints = require("./interactions/limitPoints.js");
+// const limitPoints = require("./interactions/limitPoints.js");
 const sendRatingEveryMonth = require("./interactions/sendRatingEveryMonth.js");
 const startClearDatabaseInterval = require("./interactions/startClearDatabase.js")
 const updateInvites = require("./interactions/updateInvites.js");
@@ -31,20 +31,20 @@ const whenMessageDelete = require("./interactions/whenMessageDelete.js");
 
 // імпорт констант
 
-const antiSpam = require('./constants/antiSpam.js')
+// const antiSpam = require('./constants/antiSpam.js')
 
 // ініціалізація клієнту
 
 const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-    GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.GuildVoiceStates,
-    GatewayIntentBits.GuildInvites,
-  ],
-  partials: [Partials.Channel],
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildVoiceStates,
+        GatewayIntentBits.GuildInvites,
+    ],
+    partials: [Partials.Channel],
 });
 
 // зчитування папок із слеш функціями 
@@ -55,42 +55,42 @@ const foldersPath = path.join(__dirname, "commands");
 const commandFolders = fs.readdirSync(foldersPath);
 
 for (const folder of commandFolders) {
-  const commandsPath = path.join(foldersPath, folder);
-  const commandFiles = fs
-    .readdirSync(commandsPath)
-    .filter((file) => file.endsWith(".js"));
-  for (const file of commandFiles) {
-    const filePath = path.join(commandsPath, file);
-    const command = require(filePath);
-    if ("data" in command && "execute" in command) {
-      client.commands.set(command.data.name, command);
-    } else {
-      console.log(
-        `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
-      );
+    const commandsPath = path.join(foldersPath, folder);
+    const commandFiles = fs
+        .readdirSync(commandsPath)
+        .filter((file) => file.endsWith(".js"));
+    for (const file of commandFiles) {
+        const filePath = path.join(commandsPath, file);
+        const command = require(filePath);
+        if ("data" in command && "execute" in command) {
+            client.commands.set(command.data.name, command);
+        } else {
+            console.log(
+                `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
+            );
+        }
     }
-  }
 }
 
 const antiSpam = {
-  warnThreshold: 3,
-  muteTreshold: 6,
-  kickTreshold: 9,
-  banTreshold: 12,
-  warnMessage: "Stop spamming!",
-  muteMessage: "You have been muted for spamming!",
-  kickMessage: "You have been kicked for spamming!",
-  banMessage: "You have been banned for spamming!",
-  unMuteTime: 60,
-  verbose: true,
-  removeMessages: true,
+    warnThreshold: 3,
+    muteTreshold: 6,
+    kickTreshold: 9,
+    banTreshold: 12,
+    warnMessage: "Stop spamming!",
+    muteMessage: "You have been muted for spamming!",
+    kickMessage: "You have been kicked for spamming!",
+    banMessage: "You have been banned for spamming!",
+    unMuteTime: 60,
+    verbose: true,
+    removeMessages: true,
 };
 
 config()
 
-client.on("ready", async (op) => {
-  database(client);
-  fetchInvites(op, client);
+client.on("ready", async(op) => {
+    database(client);
+    fetchInvites(op, client);
 });
 
 limitPoints();
@@ -102,15 +102,15 @@ const TOKEN = process.env.TOKEN;
 
 // взаємодія з юзером
 
-client.on("guildMemberAdd", async (person) => {
-  updateInvites(person, client);
+client.on("guildMemberAdd", async(person) => {
+    updateInvites(person, client);
 });
 
-client.on(Events.InteractionCreate, async (interaction) => {
-  if (!interaction.isChatInputCommand()) return;
-  addNewMember(interaction);
+client.on(Events.InteractionCreate, async(interaction) => {
+    if (!interaction.isChatInputCommand()) return;
+    addNewMember(interaction);
 
- getInteractionCommands(interaction)
+    getInteractionCommands(interaction)
 });
 
 
@@ -118,23 +118,23 @@ client.on("messageCreate", async(message) => {
     if (message.author.bot) return;
 
     accrualPoints(message);
-    useAntispam(message, antiSpam, userCooldowns, userMuteCooldowns);
+    useAntispam(message, antiSpam);
     imageMessage(message);
     whenMessageDelete(message);
     badWords(message);
 });
 
-client.on(Events.GuildMemberUpdate, async (oldMember, newMember) => {
-  whenBoost(oldMember, newMember, client);
+client.on(Events.GuildMemberUpdate, async(oldMember, newMember) => {
+    whenBoost(oldMember, newMember, client);
 });
 
 client.on("voiceStateUpdate", (oldState, newState) => {
-  voiceStateUpdate(oldState, newState, client);
-  checkRoleInVc(oldState, newState, client);
+    voiceStateUpdate(oldState, newState, client);
+    checkRoleInVc(oldState, newState, client);
 });
 
-client.on("messageDelete", async (msg) => {
-  whenMessageDelete(msg);
+client.on("messageDelete", async(msg) => {
+    whenMessageDelete(msg);
 });
 
 
