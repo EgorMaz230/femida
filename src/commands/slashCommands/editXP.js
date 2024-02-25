@@ -73,7 +73,7 @@ module.exports = {
             const xpToSubtract = interaction.options.get('xp').value;
             userInfo.xp -= xpToSubtract;
             await userInfo.save();
-            await interaction.editReply(`${xpToSubtract} XP has been subtracted to ${targetUserObj.user.tag}. His new xp is ${userInfo.xp}. `)
+            await interaction.editReply(`${xpToSubtract} XP has been subtracted from ${targetUserObj.user.tag}. His new xp is ${userInfo.xp}. `)
         }
 
     }
