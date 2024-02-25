@@ -1,5 +1,3 @@
-const limitPoints = require("./utils/limitPoints.js");
-
 const {
     Client,
     GatewayIntentBits,
@@ -72,20 +70,6 @@ for (const folder of commandFolders) {
   }
 }
 
-const antiSpam = {
-  warnThreshold: 3,
-  muteTreshold: 6,
-  kickTreshold: 9,
-  banTreshold: 12,
-  warnMessage: "Stop spamming!",
-  muteMessage: "You have been muted for spamming!",
-  kickMessage: "You have been kicked for spamming!",
-  banMessage: "You have been banned for spamming!",
-  unMuteTime: 60,
-  verbose: true,
-  removeMessages: true,
-};
-
 config()
 
 client.on("ready", async (op) => {
@@ -116,7 +100,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 client.on("messageCreate", async(message) => {
     if (message.author.bot) return;
-
+    addNewMember(false, message);
     accrualPoints(message);
     useAntispam(message, antiSpam, userCooldowns, userMuteCooldowns);
     imageMessage(message);
@@ -129,6 +113,7 @@ client.on(Events.GuildMemberUpdate, async (oldMember, newMember) => {
 });
 
 client.on("voiceStateUpdate", (oldState, newState) => {
+  addNewMember(false, false, newState);
   voiceStateUpdate(oldState, newState, client);
   checkRoleInVc(oldState, newState, client);
 });
