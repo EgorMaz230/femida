@@ -18,7 +18,12 @@ module.exports = async (client) => {
     };
   });
   let sortedUsersArrEmbed = usersArrEmbed
-    .sort((firstUser, secondUser) => secondUser.__xp - firstUser.__xp)
+    .sort((firstUser, secondUser) => {
+      if (firstUser.__level !== secondUser.__level) {
+        return secondUser.__level - firstUser.__level;
+      }
+      return secondUser.__xp - firstUser.__xp;
+    })
     .filter((user) => user.__xp >= 5);
 
   if (sortedUsersArrEmbed.length > 10) {
@@ -51,11 +56,9 @@ module.exports = async (client) => {
   const xpArr = sortedUsersArrEmbed.map(({ __xp }) => `\`${__xp}\`\n\n`);
 
   const ratingEmbed = new EmbedBuilder()
-    .setColor("Yellow")
+    .setColor("#FFD23F")
     .setTitle("Щомісячний рейтинг участників")
-    .setImage(
-      "https://tickikids.ams3.cdn.digitaloceanspaces.com/z1.cache/gallery/organizations/1756/image_5dc568cd5e8599.97626059.jpg"
-    )
+    .setImage("attachment://goiteens-logo.jpg")
     .addFields(
       { name: "Ім'я", value: usernamesArr.join(""), inline: true },
       { name: "Рівень", value: levelsArr.join(""), inline: true },

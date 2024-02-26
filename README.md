@@ -1,11 +1,9 @@
-<div style="border-bottom: 1px solid #eee">
-    <h1 style="text-align: center; border-bottom: none"><b>BotName</b></h1>
-    <center>
+<div style="border-bottom: 1px solid #eee" align="center">
+    <h1 style="border-bottom: none"><b>BotName</b></h1>
         <a href="https://github.com/EgorMaz230/discord_bot_goIteens/graphs/contributors" >
           <img src="https://contrib.rocks/image?repo=EgorMaz230/discord_bot_goIteens"  />
         </a>
         <a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=22&pause=1000&color=EEEEEE&background=0F09FF00&center=true&vCenter=true&multiline=true&repeat=false&random=false&width=910&height=100&lines=BotName+-+%D1%86%D0%B5+%D0%B4%D1%96%D1%81%D0%BA%D0%BE%D1%80%D0%B4+%D0%B1%D0%BE%D1%82+%D1%81%D1%82%D0%B2%D0%BE%D1%80%D0%B5%D0%BD%D0%B8%D0%B9+%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D0%BE%D1%8E+%D1%83%D0%BA%D1%80%D0%B0%D1%97%D0%BD%D1%81%D1%8C%D0%BA%D0%B8%D1%85+%D1%80%D0%BE%D0%B7%D1%80%D0%BE%D0%B1%D0%BD%D0%B8%D0%BA%D1%96%D0%B2%E2%8F%AB" alt="Typing SVG" /></a>
-    </center>
 </div>
 
 <h2 align="center" style="border-bottom: none"><i>Швидко знайти потрібну інформацію ви можете тут:</i></h2>
@@ -129,7 +127,7 @@ BotName - це бот який вміє виконувати адміністр�
        <h3 id="editXpCommand">Команда: <code>/edit-xp</code></h3>
             <a href="https://github.com/EgorMaz230/discord_bot_goIteens/blob/main/src/commands/slashCommands/editXp.js">editXp.js</a>
             <p>Дозволяє змінити xp конкретного користувача</p>
-            <i>Примітка: є доступною лише для учасників з роллю</i>
+            <i>Примітка: є доступною лише для учасників з ролями адміністрації та модерації</i>
        </li>
     </ul>
      
