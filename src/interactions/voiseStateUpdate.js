@@ -1,5 +1,5 @@
 const Level = require("../models/Level");
-const updateLevel = require("./updateLevel");
+const updateLevel = require("../utils/updateLevel");
 
 module.exports = async (oldState, newState, client) => {
   if (newState.channelId) {
