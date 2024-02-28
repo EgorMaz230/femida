@@ -17,7 +17,8 @@ async function createRankCard(interaction, userObjDB) {
     .setStatus(userGuildObj.presence?.status)
     .setCurrentXP(userObjDB.xp)
     .setRequiredXP(150)
-    .setLevel(userObjDB.level);
+    .setLevel(userObjDB.level)
+    .setRank(userObjDB.currentXp);
   return rankCopy;
 }
 

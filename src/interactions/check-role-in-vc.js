@@ -1,5 +1,5 @@
 const Level = require("../models/Level");
-const updateLevel = require("./updateLevel");
+const updateLevel = require("../utils/updateLevel");
 
 module.exports = async function checkRoleInVc(oldState, newState, client) {
   if (newState.channelId) {
@@ -27,7 +27,7 @@ module.exports = async function checkRoleInVc(oldState, newState, client) {
             const people = await Level.findOne({ userId: user });
             const updateXp = people.currentXp + 30;
             await Level.findOneAndUpdate({ userId: user }, { currentXp: updateXp });
-            updateLevel(people, user);
+            await updateLevel(people, user);
           });
         } else {
           const userIds = members.map((member) => member.user.id);
@@ -43,7 +43,7 @@ module.exports = async function checkRoleInVc(oldState, newState, client) {
                 { userId: newState.id },
                 { currentXp: updateXp }
               );
-              updateLevel(people, user);
+              await updateLevel(people, user);
             }
           });
         }

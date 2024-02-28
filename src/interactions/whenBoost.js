@@ -1,5 +1,5 @@
 const Level = require("../models/Level");
-const updateLevel = require("./updateLevel");
+const updateLevel = require("../utils/updateLevel");
 const { EmbedBuilder } = require("discord.js");
 
 module.exports = async (oldMember, newMember, client) => {
@@ -30,7 +30,7 @@ module.exports = async (oldMember, newMember, client) => {
       const updatedXp = userData.xp + 50;
 
       await Level.findOneAndUpdate({ userId: userId }, { xp: updatedXp });
-      updateLevel(userData, userId);
+      await updateLevel(userData, userId);
       //? Sending a message of boost into the system channel
 
       const titleChoose = [

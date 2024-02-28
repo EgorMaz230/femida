@@ -1,13 +1,13 @@
 const Level = require("../models/Level.js");
- const messages = require("../models/messages.js");
- const antiSpam = require("../constants/antiSpam.js");
- const userMuteCooldowns = require("../constants/newMap.js");
- const userCooldowns = require("../constants/newMap.js")
+const messages = require("../models/messages.js");
+const antiSpam = require("../constants/antiSpam.js");
+const userMuteCooldowns = require("../constants/newMap.js");
+const userCooldowns = require("../constants/newMap.js");
 
 module.exports = async (message) => {
-    // Отримання ідентифікатора користувача та тексту повідомлення
-    const userId = message.author.id;
-    const content = message.content;
+  // Отримання ідентифікатора користувача та тексту повідомлення
+  const userId = message.author.id;
+  const content = message.content;
 
   try {
     // Отримання часу останнього повідомлення користувача
@@ -20,7 +20,7 @@ module.exports = async (message) => {
       message: content,
     });
     await newMessage.save();
-    
+
     // Перевірка наявності користувача в списку cooldowns
     if (!userCooldowns.has(userId)) {
       // Додавання користувача до списку cooldowns та встановлення таймауту

@@ -1,5 +1,5 @@
 const Level = require("../models/Level");
-const updateLevel = require("./updateLevel");
+const updateLevel = require("../utils/updateLevel");
 
 module.exports = async (oldState, newState, client) => {
   if (newState.channelId) {
@@ -26,7 +26,7 @@ module.exports = async (oldState, newState, client) => {
           const people = await Level.findOne({ userId: user });
           const updateXp = people.currentXp + 20;
           await Level.findOneAndUpdate({ userId: user }, { currentXp: updateXp });
-          updateLevel(people, user);
+          await updateLevel(people, user);
           console.log("people", people);
         });
       }
