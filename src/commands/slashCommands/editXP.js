@@ -59,6 +59,7 @@ module.exports = {
       guildId: interaction.guild.id,
     });
 
+
     if (!userInfo) {
       interaction.editReply(
         mentionedUserId
@@ -67,6 +68,7 @@ module.exports = {
       );
       return;
     }
+
 
     if (interaction.options.get("mode").value === "add") {
       const xpToAdd = interaction.options.get("xp").value;

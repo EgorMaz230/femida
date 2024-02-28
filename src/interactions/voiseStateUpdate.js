@@ -38,7 +38,7 @@ module.exports = async (oldState, newState, client) => {
       if (arrObj.length > 4) {
         const people = await Level.findOne({ userId: newState.id });
         const updateXp = people.xp + 20;
-        await Level.findOneAndUpdate({ userId: newState.id }, { xp: updateXp });
+        await Level.findOneAndUpdate({ userId: newState.id }, { currentXp: updateXp });
         if (people.xp >= 150) {
           const updtaeLevel = people.level + 1;
           const addXp = people.xp - 150;

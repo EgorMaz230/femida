@@ -69,21 +69,9 @@ for (const folder of commandFolders) {
   }
 }
 
-const antiSpam = {
-  warnThreshold: 3,
-  muteTreshold: 6,
-  kickTreshold: 9,
-  banTreshold: 12,
-  warnMessage: "Stop spamming!",
-  muteMessage: "You have been muted for spamming!",
-  kickMessage: "You have been kicked for spamming!",
-  banMessage: "You have been banned for spamming!",
-  unMuteTime: 60,
-  verbose: true,
-  removeMessages: true,
-};
 
-config();
+config()
+
 
 client.on("ready", async (op) => {
   database(client);
@@ -113,17 +101,20 @@ client.on(Events.InteractionCreate, async (interaction) => {
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
 
+
   accrualPoints(message);
   useAntispam(message);
   imageMessage(message);
   badWords(message);
 });
 
+
 client.on(Events.GuildMemberUpdate, async (oldMember, newMember) => {
   whenBoost(oldMember, newMember, client);
 });
 
 client.on("voiceStateUpdate", (oldState, newState) => {
+  addNewMember(false, false, newState);
   voiceStateUpdate(oldState, newState, client);
   checkRoleInVc(oldState, newState, client);
 });

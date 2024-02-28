@@ -3,10 +3,13 @@ const updateLevel = require("../utils/updateLevel");
 const { EmbedBuilder } = require("discord.js");
 
 module.exports = async (oldMember, newMember, client) => {
-  if (oldMember.roles.cache.size !== newMember.roles.cache.size) {
+  console.log("old mem", oldMember.premiumSinceTimestamp);
+  console.log("newfag", newMember.premiumSinceTimestamp);
+
+  if (oldMember.premiumSinceTimestamp || newMember.premiumSinceTimestamp) {
     if (
-      !oldMember.roles.cache.has("1192072016866574386") &&
-      newMember.roles.cache.has("1192072016866574386")
+      (!oldMember.premiumSinceTimestamp && newMember.premiumSinceTimestamp) ||
+      oldMember.premiumSinceTimestamp !== newMember.premiumSinceTimestamp
     ) {
       const userId = newMember.user.id;
 
@@ -24,7 +27,7 @@ module.exports = async (oldMember, newMember, client) => {
           currentXp: 0,
         });
 
-        await userData.save();
+        await userData.save(); //? adding new user to DB if he's not there
       }
 
       const updatedXp = userData.xp + 50;
@@ -44,12 +47,13 @@ module.exports = async (oldMember, newMember, client) => {
         .setColor("#f47fff")
         .setTitle(titleChoose)
         .setDescription(
-          `<@${userId.toString()}> тільки що забустив цей сервер!\n+50 XP`
+          `<@${userId.toString()}> тільки що забустив/ла цей сервер!\nВам нараховано 50 XP. Дякуємо за підтримку💜`
         )
         .setAuthor({
           name: newMember.user.username,
           iconURL: userIcon,
         })
+        .setThumbnail(userIcon)
         .setTimestamp();
 
       client.guilds.cache.first().systemChannel.send({
