@@ -102,11 +102,12 @@ client.on("messageCreate", async(message) => {
     if (message.author.bot) return;
     addNewMember(false, message);
     accrualPoints(message);
-    useAntispam(message, antiSpam, userCooldowns, userMuteCooldowns);
+    useAntispam(message);
     imageMessage(message);
     whenMessageDelete(message);
     badWords(message);
 });
+
 
 client.on(Events.GuildMemberUpdate, async (oldMember, newMember) => {
   whenBoost(oldMember, newMember, client);
