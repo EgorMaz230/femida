@@ -1,5 +1,5 @@
 <div style="border-bottom: 1px solid #eee" align="center">
-    <h1 style="border-bottom: none"><b>BotName</b></h1>
+    <h3 align="center"><a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Montserrat&weight=500&size=33&pause=1000&color=F8F7FD&repeat=false&random=false&width=160&lines=BotName" alt="Typing SVG" /></a></h3>
         <a href="https://github.com/EgorMaz230/discord_bot_goIteens/graphs/contributors" >
           <img src="https://contrib.rocks/image?repo=EgorMaz230/discord_bot_goIteens"  />
         </a>
@@ -29,7 +29,7 @@ BotName - це бот який вміє виконувати адміністр�
 <div>
     <h2 id="technologies-used">Технології, які використовувались</h2>
 
-<div style="display: flex; justify-content: center; margin-bottom: 50px; margin-top: 50px">
+<div align="center">
 <img src="https://img.shields.io/badge/node.js-%2344883e?style=for-the-badge&logo=node.js&labelColor=black" style="margin-right: 1.1em" />
         
 <img src="https://img.shields.io/badge/discord.js%20v14-%231e2124?style=for-the-badge&logo=discord&labelColor=black" style="margin-right: 1.1em"  />
@@ -46,7 +46,7 @@ BotName - це бот який вміє виконувати адміністр�
 <div>
     <h2 id="abilities">Можливості боту</h2>
     <p style="font-size: 1.1em;">Майже всі функції додають XP у властивість <code>currentXp</code>. Кожного дня о 12 годині ночі <code>currentXp</code> обнуляється, а досвід додається у властивість <code>XP</code></p>
-    <h2 style="border-bottom: none"><i>Навігація</i></h2>
+    <h3 style="border-bottom: none"><i>Навігація</i></h3>
 
 * [Додавання балів за спілкування у чаті💬](#xpForMessage)
 * [Антиспам💢](#antispam)
@@ -87,6 +87,7 @@ BotName - це бот який вміє виконувати адміністр�
          <h3 id="xpForBoost">Додавання балів за буст серверу☂</h3>
         <a href="https://github.com/EgorMaz230/discord_bot_goIteens/blob/main/src/interactions/whenBoost.js">whenBoost.js</a>
         <p>Додає 50 XP користувачу за буст серверу.</p>
+           <i>Примітка: ця функція є виключенням та додає бали одразу до властивості <code>XP</code></i>
        </li> 
        <li>
             <h3 id="monthRating">Формує щомісячний рейтинг найактивніших учасників серверу📜</h3>
@@ -112,10 +113,10 @@ BotName - це бот який вміє виконувати адміністр�
     </ul>
      <h2 id="commands">Команди боту</h2>
      <p style="font-size: 1.1em;">Бот містить як команди спільного доступу, так і команди, для використання яких у юзера мають бути певні права</p>
-     <h2 style="border-bottom: none"><i>Навігація</i></h2>
+     <h3 style="border-bottom: none"><i>Навігація</i></h3>
 
 * [Команда: /xp](#xpCommand)
-* [Команда: /edit-xp<](#aneditXpCommandtispam)
+* [Команда: /edit-xp](#aneditXpCommandtispam)
 <ul>
      <li>
        <h3 id="xpCommand">Команда: <code>/xp</code></h3>
