@@ -14,7 +14,6 @@ module.exports = async function accrualPoints(message) {
     const people = await Level.findOne({ userId: userId });
     const updateXp = people.currentXp + 0.5;
     await Level.findOneAndUpdate({ userId: userId }, { currentXp: updateXp });
-    updateLevel(people, userId);
-    // console.log("message:", people);
+    await updateLevel(people, userId);
   }
 };

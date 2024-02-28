@@ -1,9 +1,9 @@
 const {
-    Client,
-    GatewayIntentBits,
-    Partials,
-    Events,
-    Collection
+  Client,
+  GatewayIntentBits,
+  Partials,
+  Events,
+  Collection,
 } = require("discord.js");
 const { config } = require("dotenv");
 const path = require("node:path");
@@ -16,20 +16,19 @@ const badWords = require("./interactions/badWords.js");
 const checkRoleInVc = require("./interactions/check-role-in-vc.js");
 const database = require("./interactions/database.js");
 const fetchInvites = require("./interactions/fetchInvites.js");
-const getInteractionCommands = require("./interactions/getInteractionCommands.js")
+const getInteractionCommands = require("./interactions/getInteractionCommands.js");
 const imageMessage = require("./interactions/imageMessage.js");
 const limitPoints = require("./interactions/limitPoints.js");
 const sendRatingEveryMonth = require("./interactions/sendRatingEveryMonth.js");
-const startClearDatabaseInterval = require("./interactions/startClearDatabase.js")
+const startClearDatabaseInterval = require("./interactions/startClearDatabase.js");
 const updateInvites = require("./interactions/updateInvites.js");
 const useAntispam = require("./interactions/useAntispam.js");
 const voiceStateUpdate = require("./interactions/voiseStateUpdate.js");
 const whenBoost = require("./interactions/whenBoost.js");
 const whenMessageDelete = require("./interactions/whenMessageDelete.js");
+const helpCmd = require("../src/commands/slashCommands/help.js");
 
 // імпорт констант
-
-const antiSpam = require('./constants/antiSpam.js')
 
 // ініціалізація клієнту
 
@@ -45,7 +44,7 @@ const client = new Client({
   partials: [Partials.Channel],
 });
 
-// зчитування папок із слеш функціями 
+// зчитування папок із слеш функціями
 
 client.commands = new Collection();
 
@@ -70,7 +69,9 @@ for (const folder of commandFolders) {
   }
 }
 
+
 config()
+
 
 client.on("ready", async (op) => {
   database(client);
@@ -79,7 +80,7 @@ client.on("ready", async (op) => {
 
 limitPoints();
 sendRatingEveryMonth(client);
-startClearDatabaseInterval()
+startClearDatabaseInterval();
 antiSpam.messageCount = new Map();
 
 const TOKEN = process.env.TOKEN;
@@ -94,18 +95,17 @@ client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
   addNewMember(interaction);
 
- getInteractionCommands(interaction)
+  getInteractionCommands(interaction);
 });
 
+client.on("messageCreate", async (message) => {
+  if (message.author.bot) return;
 
-client.on("messageCreate", async(message) => {
-    if (message.author.bot) return;
-    addNewMember(false, message);
-    accrualPoints(message);
-    useAntispam(message);
-    imageMessage(message);
-    whenMessageDelete(message);
-    badWords(message);
+
+  accrualPoints(message);
+  useAntispam(message);
+  imageMessage(message);
+  badWords(message);
 });
 
 
@@ -122,6 +122,5 @@ client.on("voiceStateUpdate", (oldState, newState) => {
 client.on("messageDelete", async (msg) => {
   whenMessageDelete(msg);
 });
-
 
 client.login(TOKEN);
