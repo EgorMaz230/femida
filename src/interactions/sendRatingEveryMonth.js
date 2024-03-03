@@ -14,10 +14,10 @@ module.exports = async (client) => {
             "goiteens-logo.jpg"
           ),
         ],
-        embeds: [ratingEmbed]
+        embeds: [ratingEmbed],
       })
     );
   };
-  const sendRatingJob = new cron.CronJob("30 30 * * * *", sendRatingFn);
+  const sendRatingJob = new cron.CronJob("10 30 * * * *", sendRatingFn);
   sendRatingJob.start();
 };

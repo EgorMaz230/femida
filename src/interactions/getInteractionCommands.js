@@ -1,4 +1,4 @@
-module.exports = async (interaction) => {
+module.exports = async (interaction, client) => {
   const command = interaction.client.commands.get(interaction.commandName);
 
   if (!command) {
@@ -6,7 +6,11 @@ module.exports = async (interaction) => {
   }
 
   try {
-    await command.execute(interaction);
+    if (interaction.commandName === "leaders") {
+      await command.execute(interaction, client);
+    } else {
+      await command.execute(interaction);
+    }
   } catch (error) {
     console.error(error);
     if (interaction.replied || interaction.deferred) {
