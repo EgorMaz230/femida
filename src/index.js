@@ -95,7 +95,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
   addNewMember(interaction);
 
-  getInteractionCommands(interaction);
+  getInteractionCommands(interaction, client);
 });
 
 client.on("messageCreate", async (message) => {

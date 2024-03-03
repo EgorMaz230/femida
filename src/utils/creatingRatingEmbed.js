@@ -24,7 +24,7 @@ module.exports = async (client) => {
       }
       return secondUser.__xp - firstUser.__xp;
     })
-    .filter((user) => user.__xp >= 5);
+    .filter((user) => user.__xp >= 5 || user.__level > 1);
 
   if (sortedUsersArrEmbed.length > 10) {
     sortedUsersArrEmbed.splice(9, sortedUsersArrEmbed.length - 9);
