@@ -29,7 +29,7 @@ const whenMessageDelete = require("./interactions/whenMessageDelete.js");
 const helpCmd = require("../src/commands/slashCommands/help.js");
 
 // імпорт констант
-
+const antiSpam = require("./constants/antiSpam.js");
 // ініціалізація клієнту
 
 const client = new Client({
