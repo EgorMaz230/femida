@@ -1,4 +1,8 @@
-const { SlashCommandBuilder, AttachmentBuilder } = require("discord.js");
+const {
+  SlashCommandBuilder,
+  AttachmentBuilder,
+  EmbedBuilder,
+} = require("discord.js");
 const Level = require("../../models/Level");
 const { RankCardBuilder, Font } = require("canvacord");
 
@@ -17,8 +21,7 @@ async function createRankCard(interaction, userObjDB) {
     .setStatus(userGuildObj.presence?.status)
     .setCurrentXP(userObjDB.xp)
     .setRequiredXP(150)
-    .setLevel(userObjDB.level)
-    .setRank(userObjDB.currentXp);
+    .setLevel(userObjDB.level);
   return rankCopy;
 }
 
@@ -62,9 +65,26 @@ module.exports = {
       return;
     }
     const rankCard = await createRankCard(targetUserObj, fetchedUser);
+    // console.log(target);
     rankCard.build().then(async (data) => {
       const attachment = new AttachmentBuilder(data, "rankCard.png");
-      await interaction.editReply({ files: [attachment] });
+      const xpEmbed = new EmbedBuilder()
+        .setTitle(`Інформація про ${targetUserObj.user.globalName}`)
+        .setDescription(
+          `Використано добового ліміту XP  \`${fetchedUser.currentXp} / 150\``
+        )
+        .setColor("White");
+      const msg = await interaction.channel.send({
+        files: [data],
+        fetchReply: true,
+      });
+      const attachmentUrl = await msg.attachments.first().url;
+      await xpEmbed.setImage(attachmentUrl);
+      //  const replyMsg = await interaction.fetchReply();
+      // await console.log(msg);
+      await interaction.channel.bulkDelete([msg]);
+      // await interaction.deferReply();
+      await interaction.editReply({ embeds: [xpEmbed] });
     });
 
     if (!interaction.inGuild()) {
