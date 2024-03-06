@@ -4,6 +4,7 @@ const {
   EmbedBuilder,
 } = require("discord.js");
 const Level = require("../../models/Level");
+const updateLevel = require("../../utils/updateLevel.js");
 const { RankCardBuilder, Font } = require("canvacord");
 
 async function createRankCard(interaction, userObjDB) {
@@ -16,7 +17,11 @@ async function createRankCard(interaction, userObjDB) {
     .setAvatar(
       `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}.png?size=256`
     )
-    .setDisplayName(interaction.user.globalName)
+    .setDisplayName(
+      interaction.user.globalName
+        ? interaction.user.globalName
+        : interaction.user.username
+    )
     .setUsername("@" + interaction.user.username)
     .setStatus(userGuildObj.presence?.status)
     .setCurrentXP(userObjDB.xp)
@@ -47,11 +52,11 @@ module.exports = {
     const mentionedUserId = interaction.options.get("target-user")?.value;
     const targetUserId = mentionedUserId || interaction.member.id;
     const targetUserObj = await interaction.guild.members.fetch(targetUserId);
-
     const fetchedUser = await Level.findOne({
       userId: targetUserId,
       guildId: interaction.guild.id,
     });
+    await updateLevel(fetchedUser, targetUserId);
     if (!fetchedUser) {
       interaction.editReply(
         mentionedUserId
@@ -69,7 +74,13 @@ module.exports = {
     rankCard.build().then(async (data) => {
       const attachment = new AttachmentBuilder(data, "rankCard.png");
       const xpEmbed = new EmbedBuilder()
-        .setTitle(`Інформація про ${targetUserObj.user.globalName}`)
+        .setTitle(
+          `Інформація про ${
+            targetUserObj.user.globalName
+              ? targetUserObj.user.globalName
+              : targetUserObj.user.username
+          }`
+        )
         .setDescription(
           `Використано добового ліміту XP  \`${fetchedUser.currentXp} / 150\``
         )
