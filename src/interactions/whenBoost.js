@@ -30,7 +30,7 @@ module.exports = async (oldMember, newMember, client) => {
         await userData.save(); //? adding new user to DB if he's not there
       }
 
-      const updatedXp = userData.xp + 50;
+      const updatedXp = userData.xp + 200;
 
       await Level.findOneAndUpdate({ userId: userId }, { xp: updatedXp });
       await updateLevel(userData, userId);
