@@ -23,10 +23,15 @@ module.exports = async function updateInvites(person, client) {
         ) {
           global.mainObj[String(member.user.id)] =
             global.tempObj[String(member.user.id)];
-          addPoints(member.user.id, 100);
+          const date = new Date();
+          const month = (date.getFullYear() - member.joinedAt.getFullYear()) * 12 + date.getMonth();
+          if (member.joinedAt.getMonth() < month) {
+            addPoints(member.user.id, 100);
+          }
+          
         }
       }
     });
   }
-  setTimeout(up, 500);
+  setTimeout(up, 1000);
 };
