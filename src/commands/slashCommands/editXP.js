@@ -1,6 +1,6 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const Level = require("../../models/Level");
-const updateLevel = require('../../utils/updateLevel');
+const updateLevel = require("../../utils/updateLevel");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -54,36 +54,56 @@ module.exports = {
     const targetUserId = mentionedUserId || interaction.member.id;
     const targetUserObj = await interaction.guild.members.fetch(targetUserId);
 
-    const userInfo = await Level.findOne({
+    let userInfo = await Level.findOne({
       userId: targetUserId,
       guildId: interaction.guild.id,
     });
 
-
     if (!userInfo) {
-      interaction.editReply(
-        mentionedUserId
-          ? `${targetUserObj.user.tag} doesn't in DataBase. Try again when they chat a little more`
-          : `You don't in DataBase. Chat a little more and try again`
-      );
-      return;
+      const newUser = new Level({
+        userId: targetUserId,
+        guildId: interaction.guild.id,
+        xp: 0,
+        currentXp: 0,
+        level: 1,
+      });
+
+      await newUser.save();
+      userInfo = await Level.findOne({
+        userId: targetUserId,
+        guildId: interaction.guild.id,
+      });
     }
-
-
+    const replyEmbed = new EmbedBuilder()
+      .setTitle("Операція прошла успішно")
+      .setColor("#FFD23F")
+      .setTimestamp();
     if (interaction.options.get("mode").value === "add") {
       const xpToAdd = interaction.options.get("xp").value;
       userInfo.xp += xpToAdd;
       await userInfo.save();
-      await interaction.editReply(
-        `${xpToAdd} XP has been added to ${targetUserObj.user.tag}. His new xp is ${userInfo.xp}. `
-      );
+      await updateLevel(userInfo, userInfo.userId);
+      const userNewXP = await Level.findOne({ userId: targetUserId });
+      await interaction.editReply({
+        embeds: [
+          replyEmbed.setDescription(
+            `\`${xpToAdd}\` XP було додано до ${targetUserObj.user.tag}. Новий XP користувача - \`${userNewXP.xp}\`. `
+          ),
+        ],
+      });
     } else if (interaction.options.get("mode").value === "subtract") {
       const xpToSubtract = interaction.options.get("xp").value;
       userInfo.xp -= xpToSubtract;
       await userInfo.save();
-      await interaction.editReply(
-        `${xpToSubtract} XP has been subtracted to ${targetUserObj.user.tag}. His new xp is ${userInfo.xp}. `
-      );
+      await updateLevel(userInfo, userInfo.userId);
+      const userNewXP = await Level.findOne({ userId: targetUserId });
+      await interaction.editReply({
+        embeds: [
+          replyEmbed.setDescription(
+            `\`${xpToSubtract}\` XP has been subtracted to ${targetUserObj.user.tag}. His new xp is \`${userNewXP.xp}\`. `
+          ),
+        ],
+      });
     }
   },
 };

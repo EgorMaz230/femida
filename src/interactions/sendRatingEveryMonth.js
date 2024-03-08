@@ -5,19 +5,25 @@ const cron = require("cron");
 module.exports = async (client) => {
   const sendRatingFn = async () => {
     const ratingEmbed = await creatingRatingEmbed(client);
-
+    let attachment = new AttachmentBuilder(
+      "src/imgs/goiteens-logo.jpg",
+      "goiteens-logo.jpg"
+    );
+    if (ratingEmbed.data.title === "Error") {
+      attachment = new AttachmentBuilder(
+        "src/imgs/catError.gif",
+        "catError.gif"
+      );
+    }
     client.channels.fetch("1192080421677191288").then((channel) =>
-      channel.send({
-        files: [
-          new AttachmentBuilder(
-            "src/imgs/goiteens-logo.jpg",
-            "goiteens-logo.jpg"
-          ),
-        ],
-        embeds: [ratingEmbed],
-      })
+      channel
+        .send({
+          files: [attachment],
+          embeds: [ratingEmbed],
+        })
+        .catch((err) => console.log(err))
     );
   };
-  const sendRatingJob = new cron.CronJob("10 30 * * * *", sendRatingFn);
+  const sendRatingJob = new cron.CronJob("20 10 * * * *", sendRatingFn);
   sendRatingJob.start();
 };
