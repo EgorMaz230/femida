@@ -7,8 +7,7 @@ module.exports = {
     .setName("leaders")
     .setDescription("Надсилає рейтинг учасників серверу"),
   async execute(interaction, client) {
-      await interaction.deferReply();
-      console.log(interaction);
+    await interaction.deferReply();
     const sendRatingFn = async () => {
       const ratingEmbed = await creatingRatingEmbed(client);
 
@@ -18,6 +17,7 @@ module.exports = {
             "src/imgs/goiteens-logo.jpg",
             "goiteens-logo.jpg"
           ),
+          new AttachmentBuilder("src/imgs/catError.gif", "catError.gif"),
         ],
         embeds: [ratingEmbed],
       });

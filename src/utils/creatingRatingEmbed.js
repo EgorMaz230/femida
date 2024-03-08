@@ -4,6 +4,13 @@ const { EmbedBuilder } = require("discord.js");
 
 module.exports = async (client) => {
   const usersData = await Level.find({});
+  if (usersData.length === 0) {
+    return new EmbedBuilder()
+      .setTitle("Error")
+      .setColor("#D04848")
+      .setDescription("Strange error occured. Database is empty")
+      .setThumbnail("attachment://catError.gif");
+  }
   const usersIds = usersData.map((user) => user.userId);
   const usersObjs = await getUsersByIds(usersIds, client);
   const usersArrEmbed = usersData.map((user) => {
@@ -30,6 +37,12 @@ module.exports = async (client) => {
     sortedUsersArrEmbed.splice(9, sortedUsersArrEmbed.length - 9);
   }
 
+  if (sortedUsersArrEmbed.length === 0) {
+    return new EmbedBuilder()
+      .setTitle("Error")
+      .setColor("#D04848")
+      .setDescription("Strange error occured. Database is empty");
+  }
   //? Sorting arrays
 
   const usernamesArr = sortedUsersArrEmbed.reduce((acc, { name }) => {
