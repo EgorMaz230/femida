@@ -156,4 +156,5 @@ BotName - це бот який вміє виконувати адміністр�
 
 </div>
 <div><h3 align="right">Зроблено Morgana team з 💚</h3>
+    <p align="right"><a href="https://github.com/EgorMaz230">EgorMaz230</a> <a href="https://github.com/Yorabest">Sophia</a> <a href="https://github.com/yasinskislava">yasinskislava</a> <a href="https://github.com/0qsenxx">0qsenxx</a> <a href="https://github.com/Vllaaddd">Vlad</a> <a href="https://github.com/m1xture">m1xture</a> <a href="https://github.com/KirillProgrammerTop1gg">Gorbunov Kirill</a> <a href="https://github.com/snastia">snastia</a> <a href="https://github.com/Olexander1234">Olexander</a></p>
 </div>
