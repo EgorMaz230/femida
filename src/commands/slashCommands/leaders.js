@@ -10,17 +10,22 @@ module.exports = {
     await interaction.deferReply();
     const sendRatingFn = async () => {
       const ratingEmbed = await creatingRatingEmbed(client);
-
-      await interaction.editReply({
-        files: [
-          new AttachmentBuilder(
-            "src/imgs/goiteens-logo.jpg",
-            "goiteens-logo.jpg"
-          ),
-          new AttachmentBuilder("src/imgs/catError.gif", "catError.gif"),
-        ],
-        embeds: [ratingEmbed],
-      });
+      let attachment = new AttachmentBuilder(
+        "src/imgs/goiteens-logo.jpg",
+        "goiteens-logo.jpg"
+      );
+      if (ratingEmbed.data.title === "Error") {
+        attachment = new AttachmentBuilder(
+          "src/imgs/catError.gif",
+          "catError.gif"
+        );
+      }
+      await interaction
+        .editReply({
+          files: [attachment],
+          embeds: [ratingEmbed],
+        })
+        .catch((e) => console.log(e));
     };
     sendRatingFn();
   },

@@ -51,6 +51,10 @@ module.exports = {
 
     const mentionedUserId = interaction.options.get("target-user")?.value;
     const targetUserId = mentionedUserId || interaction.member.id;
+    if (targetUserId === "1194725259446849647") {
+      interaction.editReply("Ти не можеш подивитись мій рівень😉");
+      return;
+    }
     const targetUserObj = await interaction.guild.members.fetch(targetUserId);
     const fetchedUser = await Level.findOne({
       userId: targetUserId,
@@ -65,10 +69,7 @@ module.exports = {
       );
       return;
     }
-    if (targetUserId === "1194725259446849647") {
-      interaction.editReply("Ти не можеш подивитись мій рівень😉");
-      return;
-    }
+
     const rankCard = await createRankCard(targetUserObj, fetchedUser);
     // console.log(target);
     rankCard.build().then(async (data) => {

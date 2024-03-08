@@ -69,9 +69,7 @@ for (const folder of commandFolders) {
   }
 }
 
-
-config()
-
+config();
 
 client.on("ready", async (op) => {
   database(client);
@@ -100,23 +98,21 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
-
-
-  accrualPoints(message);
-  useAntispam(message);
-  imageMessage(message);
-  badWords(message);
+  await addNewMember(false, message);
+  await accrualPoints(message);
+  await useAntispam(message);
+  await imageMessage(message);
+  await badWords(message);
 });
-
 
 client.on(Events.GuildMemberUpdate, async (oldMember, newMember) => {
   whenBoost(oldMember, newMember, client);
 });
 
-client.on("voiceStateUpdate", (oldState, newState) => {
-  addNewMember(false, false, newState);
-  voiceStateUpdate(oldState, newState, client);
-  checkRoleInVc(oldState, newState, client);
+client.on("voiceStateUpdate", async (oldState, newState) => {
+  await addNewMember(false, false, newState);
+  await voiceStateUpdate(oldState, newState, client);
+  await checkRoleInVc(oldState, newState, client);
 });
 
 client.on("messageDelete", async (msg) => {

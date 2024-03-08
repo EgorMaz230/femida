@@ -41,7 +41,10 @@ module.exports = async (client) => {
     return new EmbedBuilder()
       .setTitle("Error")
       .setColor("#D04848")
-      .setDescription("Strange error occured. Database is empty");
+      .setDescription(
+        "Strange error occured. This server is probably \n do not have users more than 5 XP"
+      )
+      .setThumbnail("attachment://catError.gif");
   }
   //? Sorting arrays
 
