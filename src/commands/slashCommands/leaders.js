@@ -14,7 +14,7 @@ module.exports = {
         "src/imgs/goiteens-logo.jpg",
         "goiteens-logo.jpg"
       );
-      if (ratingEmbed.data.title === "Error") {
+      if (ratingEmbed.data.title === "Помилка") {
         attachment = new AttachmentBuilder(
           "src/imgs/catError.gif",
           "catError.gif"

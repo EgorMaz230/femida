@@ -4,10 +4,9 @@ const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("info")
-    .setDescription("Bot capabilities"),
+    .setDescription("Можливості боту"),
 
   async execute(interaction) {
-    // interaction.reply(commandReplyText);
     let currentColor = "";
     const currentMonth = new Date().getMonth();
 

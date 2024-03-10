@@ -33,11 +33,11 @@ async function createRankCard(interaction, userObjDB) {
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("xp")
-    .setDescription("Shows your/someone's xp.")
+    .setDescription("Виводить XP користувача")
     .addUserOption((option) =>
       option
         .setName("target-user")
-        .setDescription("The user whose xp you want to see")
+        .setDescription("Користувач, XP якого ти хочеш подивитись")
         .setRequired(false)
     ),
 
@@ -71,7 +71,6 @@ module.exports = {
     }
 
     const rankCard = await createRankCard(targetUserObj, fetchedUser);
-    // console.log(target);
     rankCard.build().then(async (data) => {
       const attachment = new AttachmentBuilder(data, "rankCard.png");
       const xpEmbed = new EmbedBuilder()
@@ -92,10 +91,7 @@ module.exports = {
       });
       const attachmentUrl = await msg.attachments.first().url;
       await xpEmbed.setImage(attachmentUrl);
-      //  const replyMsg = await interaction.fetchReply();
-      // await console.log(msg);
       await interaction.channel.bulkDelete([msg]);
-      // await interaction.deferReply();
       await interaction.editReply({ embeds: [xpEmbed] });
     });
 
