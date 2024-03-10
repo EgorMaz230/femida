@@ -6,9 +6,9 @@ module.exports = async (client) => {
   const usersData = await Level.find({});
   if (usersData.length === 0) {
     return new EmbedBuilder()
-      .setTitle("Error")
+      .setTitle("Помилка")
       .setColor("#D04848")
-      .setDescription("Strange error occured. Database is empty")
+      .setDescription("Трапилася дивна помилка. Даза даних пуста")
       .setThumbnail("attachment://catError.gif");
   }
   const usersIds = usersData.map((user) => user.userId);
@@ -39,10 +39,10 @@ module.exports = async (client) => {
 
   if (sortedUsersArrEmbed.length === 0) {
     return new EmbedBuilder()
-      .setTitle("Error")
+      .setTitle("Помилка")
       .setColor("#D04848")
       .setDescription(
-        "Strange error occured. This server is probably \n do not have users more than 5 XP"
+        "Трапилася дивна помилка. На цьому сервері ймовірно \n немає користувачів з XP більше 4"
       )
       .setThumbnail("attachment://catError.gif");
   }
