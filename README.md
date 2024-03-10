@@ -1,9 +1,9 @@
 <div style="border-bottom: 1px solid #eee" align="center">
-    <h3 align="center"><a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Montserrat&weight=500&size=33&pause=1000&color=F8F7FD&repeat=false&random=false&width=160&lines=BotName" alt="Typing SVG" /></a></h3>
+    <h3 align="center"><a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Montserrat&weight=500&size=33&pause=1000&color=4D7CAE&repeat=false&random=false&width=160&lines=Femida" alt="Typing SVG" /></a></h3>
         <a href="https://github.com/EgorMaz230/discord_bot_goIteens/graphs/contributors" >
           <img src="https://contrib.rocks/image?repo=EgorMaz230/discord_bot_goIteens"  />
         </a>
-        <a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=22&pause=1000&color=EEEEEE&background=0F09FF00&center=true&vCenter=true&multiline=true&repeat=false&random=false&width=910&height=100&lines=BotName+-+%D1%86%D0%B5+%D0%B4%D1%96%D1%81%D0%BA%D0%BE%D1%80%D0%B4+%D0%B1%D0%BE%D1%82+%D1%81%D1%82%D0%B2%D0%BE%D1%80%D0%B5%D0%BD%D0%B8%D0%B9+%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D0%BE%D1%8E+%D1%83%D0%BA%D1%80%D0%B0%D1%97%D0%BD%D1%81%D1%8C%D0%BA%D0%B8%D1%85+%D1%80%D0%BE%D0%B7%D1%80%D0%BE%D0%B1%D0%BD%D0%B8%D0%BA%D1%96%D0%B2%E2%8F%AB" alt="Typing SVG" /></a>
+        <a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=22&pause=1000&color=375A7F&center=true&vCenter=true&multiline=true&repeat=false&random=false&width=910&height=100&lines=Femida+-+%D1%86%D0%B5+%D0%B4%D1%96%D1%81%D0%BA%D0%BE%D1%80%D0%B4+%D0%B1%D0%BE%D1%82+%D1%81%D1%82%D0%B2%D0%BE%D1%80%D0%B5%D0%BD%D0%B8%D0%B9+%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D0%BE%D1%8E+%D1%83%D0%BA%D1%80%D0%B0%D1%97%D0%BD%D1%81%D1%8C%D0%BA%D0%B8%D1%85+%D1%80%D0%BE%D0%B7%D1%80%D0%BE%D0%B1%D0%BD%D0%B8%D0%BA%D1%96%D0%B2%E2%8F%AB" alt="Typing SVG" /></a>
 </div>
 
 <h2 align="center" style="border-bottom: none"><i>Швидко знайти потрібну інформацію ви можете тут:</i></h2>
@@ -20,10 +20,10 @@
 <img src="https://cdn.discordapp.com/avatars//67e01b864865bb1cf7cd0d2acb9356b2.png?size=256" align="right" vertical-align="center">
 
 <p style="font-size: 1.15em;">
-BotName - це бот який вміє виконувати адміністративні функції і має систему рівнів та XP, які нараховуються за спілкування на сервері. Зокрема мутити за спам та нецензурні слова, нараховувати XP за повідомлення, за участь у голосовому каналі, за буст серверу, за запрошення нового учасника серверу <i>(умова - Ви повинні бути на сервері більш ніж місяць)</i>, та навіть за участь у трибуні, все це в компетенції нашого боту.
+Femida - це бот який вміє виконувати адміністративні функції і має систему рівнів та XP, які нараховуються за спілкування на сервері. Зокрема мутити за спам та нецензурні слова, нараховувати XP за повідомлення, за участь у голосовому каналі, за буст серверу, за запрошення нового учасника серверу <i>(умова - Ви повинні бути на сервері більш ніж місяць)</i>, та навіть за участь у трибуні, все це в компетенції нашого боту.
         </p>
         <p>Інформація або фото надані тут можуть трохи відрізнятися від реальності. Наша команда намагається якомога швидше оновлювати документацію при оновленнях, але краще перевіряйте роботу додатку безпосередньо на Discord сервері</p>
-    <p style="font-size: 1.1em;"> Невеличкий спойлер: планується додати вебінтерфейс до BotName, а це означає що дуже скоро Ви матимете широкі можливості для налаштування боту саме під Ваш діскорд сервер😉</p>
+    <p style="font-size: 1.1em;"> Невеличкий спойлер: планується додати вебінтерфейс до Femida, а це означає що дуже скоро Ви матимете широкі можливості для налаштування боту саме під Ваш діскорд сервер😉</p>
 
 > Бот створений за підтримки академії GoITeens🤝
 </div>
@@ -39,7 +39,7 @@ BotName - це бот який вміє виконувати адміністр�
     <b>Перед наступною командою переконайтеся що у Вас є файл <code>.env</code> на найвищому рівні папки та у ньому прописані властивості <code>TOKEN</code>, <code>MONGODB_URI</code>, <code>GUILD_ID</code> та <code>CLIENT_ID</code>. У разі відсутності цього файлу або деяких властивостей в консолі виведеться помилка</b>
     <br><br>
 <code>npm start</code>
-    <p>*Запускає BotName</p>
+    <p>*Запускає Femida</p>
 </div>
 <div>
     <h2 id="technologies-used">Технології, які використовувались</h2>
@@ -105,9 +105,10 @@ BotName - це бот який вміє виконувати адміністр�
            <i>Примітка: ця функція є виключенням та додає бали одразу до властивості <code>XP</code></i>
        </li> 
        <li>
-            <h3 id="monthRating">Формує щомісячний рейтинг найактивніших учасників серверу📜</h3>
+            <h3 id="monthRating">Формування щомісячного рейтингу найактивніших учасників серверу📜</h3>
             <a href="https://github.com/EgorMaz230/discord_bot_goIteens/blob/main/src/interactions/sendRatingEveryMonth.js">sendRatingEveryMonth.js</a> & <a href="https://github.com/EgorMaz230/discord_bot_goIteens/blob/main/src/utils/creatingRatingEmbed.js">creatingRatingEmbed.js</a>
             <p>Першого числа кожного місяця зранку відправляє топ 15 найактивніших учасників серверу. Якщо ім'я користувача надто довге то воно буде обрізане.</p>
+           <i>Примітка: до рейтингу попадають користувачі з <code>XP</code> більше 4</i>
        </li>
          <li>
        <h3 id="addNewMember">Додавання учасника до бази даних 🗂️</h3>
@@ -132,6 +133,7 @@ BotName - це бот який вміє виконувати адміністр�
 
 * [Команда: /xp](#xpCommand)
 * [Команда: /edit-xp](#editXpCommand)
+* [Команда: /info](#infoCommand)
 * [Команда: /leaders](#leadersCommand)
 <ul>
      <li>
@@ -147,14 +149,21 @@ BotName - це бот який вміє виконувати адміністр�
             <i>Примітка: є доступною лише для учасників з ролями адміністрації та модерації</i>
        </li>
     <li>
+            <h3 id="infoCommand">Команда: <code>/info</code></h3>
+            <a href="https://github.com/EgorMaz230/discord_bot_goIteens/blob/main/src/commands/slashCommands/help.js">help.js</a>
+            <p>Виводить невелику довідку про бота</p>
+            <i>Примітка: колір поблизу повідомлення змінюється залежно від пори року</i>
+       </li>
+    <li>
             <h3 id="leadersCommand">Команда: <code>/leaders</code></h3>
             <a href="https://github.com/EgorMaz230/discord_bot_goIteens/blob/main/src/commands/slashCommands/leaders.js">leaders.js</a>
             <p>Виводить поточний рейтинг найактивніших учасників</p>
+            <i>Примітка: до рейтингу попадають користувачі з <code>XP</code> більше 4</i>
        </li>
     </ul>
      
 
 </div>
-<div><h3 align="right">Зроблено Morgana team з 💚</h3>
-    <p align="right"><a href="https://github.com/EgorMaz230">EgorMaz230</a> <a href="https://github.com/Yorabest">Sophia</a> <a href="https://github.com/yasinskislava">yasinskislava</a> <a href="https://github.com/0qsenxx">0qsenxx</a> <a href="https://github.com/Vllaaddd">Vlad</a> <a href="https://github.com/m1xture">m1xture</a> <a href="https://github.com/KirillProgrammerTop1gg">Gorbunov Kirill</a> <a href="https://github.com/snastia">snastia</a> <a href="https://github.com/Olexander1234">Olexander</a></p>
+<div><h3 align="right">Зроблено Morgana team з 💙</h3>
+    <p align="right"><a href="https://github.com/EgorMaz230">EgorMaz230</a> <a href="https://github.com/Yorabest">Sophia</a> <a href="https://github.com/yasinskislava">yasinskislava</a> <a href="https://github.com/0qsenxx">0qsenxx</a> <a href="https://github.com/Vllaaddd">Vlad</a> <br> <a href="https://github.com/m1xture">m1xture</a> <a href="https://github.com/KirillProgrammerTop1gg">Gorbunov Kirill</a> <a href="https://github.com/snastia">snastia</a> <a href="https://github.com/Olexander1234">Olexander</a></p>
 </div>
