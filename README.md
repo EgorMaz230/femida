@@ -133,6 +133,7 @@ Femida - це бот який вміє виконувати адміністра
 
 * [Команда: /xp](#xpCommand)
 * [Команда: /edit-xp](#editXpCommand)
+* [Команда: /info](#infoCommand)
 * [Команда: /leaders](#leadersCommand)
 <ul>
      <li>
@@ -146,6 +147,12 @@ Femida - це бот який вміє виконувати адміністра
             <a href="https://github.com/EgorMaz230/discord_bot_goIteens/blob/main/src/commands/slashCommands/editXp.js">editXp.js</a>
             <p>Дозволяє змінити xp конкретного користувача</p>
             <i>Примітка: є доступною лише для учасників з ролями адміністрації та модерації</i>
+       </li>
+    <li>
+            <h3 id="infoCommand">Команда: <code>/info</code></h3>
+            <a href="https://github.com/EgorMaz230/discord_bot_goIteens/blob/main/src/commands/slashCommands/help.js">help.js</a>
+            <p>Виводить невелику довідку про бота</p>
+            <i>Примітка: колір поблизу повідомлення змінюється залежно від пори року</i>
        </li>
     <li>
             <h3 id="leadersCommand">Команда: <code>/leaders</code></h3>
