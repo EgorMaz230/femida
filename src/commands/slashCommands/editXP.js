@@ -92,7 +92,10 @@ module.exports = {
         ],
       });
     } else if (interaction.options.get("mode").value === "subtract") {
-      const xpToSubtract = interaction.options.get("xp").value;
+      let xpToSubtract = interaction.options.get("xp").value;
+      if (xpToSubtract > userInfo.xp) {
+        xpToSubtract = userInfo.xp;
+      }
       userInfo.xp -= xpToSubtract;
       await userInfo.save();
       await updateLevel(userInfo, userInfo.userId);
@@ -100,7 +103,7 @@ module.exports = {
       await interaction.editReply({
         embeds: [
           replyEmbed.setDescription(
-            `\`${xpToSubtract}\` XP has been subtracted to ${targetUserObj.user.tag}. His new xp is \`${userNewXP.xp}\`. `
+            `\`${xpToSubtract}\` XP було віднято у ${targetUserObj.user.tag}. Новий XP користувача - \`${userNewXP.xp}\`. `
           ),
         ],
       });

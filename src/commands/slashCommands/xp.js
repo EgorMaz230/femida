@@ -7,6 +7,14 @@ const Level = require("../../models/Level");
 const updateLevel = require("../../utils/updateLevel.js");
 const { RankCardBuilder, Font } = require("canvacord");
 
+function calculateXPForLevel(lvl) {
+  let xpForLevel = 0;
+  for (let i = 0; i < lvl; i++) {
+    xpForLevel += 5 * Math.pow(i, 2) + 50 * i + 100;
+  }
+  return xpForLevel;
+}
+
 async function createRankCard(interaction, userObjDB) {
   let userGuildObj = {};
   await interaction.guild.members
@@ -25,7 +33,7 @@ async function createRankCard(interaction, userObjDB) {
     .setUsername("@" + interaction.user.username)
     .setStatus(userGuildObj.presence?.status)
     .setCurrentXP(userObjDB.xp)
-    .setRequiredXP(150)
+    .setRequiredXP(calculateXPForLevel(userObjDB.level + 1))
     .setLevel(userObjDB.level);
   return rankCopy;
 }
