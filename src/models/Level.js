@@ -16,7 +16,7 @@ const levelSchema = new Schema({
   },
   level: {
     type: Number,
-    default: 1,
+    default: 0,
   },
   currentXp: {
     type: Number,

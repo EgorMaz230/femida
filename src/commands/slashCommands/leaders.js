@@ -20,6 +20,7 @@ module.exports = {
           "catError.gif"
         );
       }
+      ratingEmbed.data.title = "Рейтинг учасників серверу";
       await interaction
         .editReply({
           files: [attachment],
