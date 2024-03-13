@@ -59,32 +59,6 @@ module.exports = async(message) => {
                 // Визначення дій в залежності від кількості аналогічних повідомлень
                 if (countOfSameMessages >= antiSpam.warnThreshold) {
                     if (countOfSameMessages >= antiSpam.muteTreshold) {
-                        // Встановлення ролі "Muted" та часу мута
-                        const lastMuteTime = userMuteCooldowns.get(userId) || 0;
-                        const muteCooldown = 60 * 1000; // 1 хвилина
-
-                        if (currentTime - lastMuteTime > muteCooldown) {
-                            const muteRole = message.guild.roles.cache.find(
-                                (role) => role.name === "Muted"
-                            );
-                            if (muteRole) {
-                                const member = message.guild.members.cache.get(userId);
-                                if (member) {
-                                    member.roles.add(muteRole);
-                                    message.channel.send(
-                                        `<@${userId}> ${antiSpam.muteMessage}`
-                                    );
-
-                                    userMuteCooldowns.set(userId, currentTime);
-
-                                    // Зняття ролі "Muted" після вказаного часу
-                                    setTimeout(() => {
-                                        member.roles.remove(muteRole);
-                                    }, antiSpam.unMuteTime * 1000);
-                                }
-                            }
-                        }
-                    } else if (countOfSameMessages >= antiSpam.warnThreshold) {
                         // код для надсилання попередження та віднімання деякої кількості досвіду (XP)
                         message.channel.send(antiSpam.warnMessage);
                         const id = message.author.id;
