@@ -46,39 +46,25 @@ module.exports = async (client) => {
       )
       .setThumbnail("attachment://catError.gif");
   }
-  //? Sorting arrays
 
-  const usernamesArr = sortedUsersArrEmbed.reduce((acc, { name }) => {
-    acc.push(
-      `\`${acc.length + 1}\` ${
-        name.length > 20 ? name.slice(0, 19) + "..." : name
-      }\n\n`
-    );
-    if (acc.length === 1) {
-      acc[0] = acc[0].slice(0, -2) + " " + ":first_place:" + "\n\n";
-    }
-    if (acc.length === 2) {
-      acc[1] = acc[1].slice(0, -2) + " " + ":second_place:" + "\n\n";
-    }
-    if (acc.length === 3) {
-      acc[2] = acc[2].slice(0, -2) + " " + ":third_place:" + "\n\n";
-    }
-    return acc;
-  }, []);
-
-  const levelsArr = sortedUsersArrEmbed.map(
-    ({ __level }) => `\`${__level}\`\n\n`
+  const fieldsArr = sortedUsersArrEmbed.reduce(
+    (acc, { name, __xp, __level }) => {
+      acc.push({
+        name: `#${acc.length + 1} ` + name.trim(),
+        value: `Рівень: \`${__level}\`  XP: \`${__xp}\``,
+      });
+      return acc;
+    },
+    []
   );
-  const xpArr = sortedUsersArrEmbed.map(({ __xp }) => `\`${__xp}\`\n\n`);
-
   const ratingEmbed = new EmbedBuilder()
     .setColor("#FFD23F")
     .setTitle("Щомісячний рейтинг участників")
-    .setImage("attachment://goiteens-logo.jpg")
-    .addFields(
-      { name: "Ім'я", value: usernamesArr.join(""), inline: true },
-      { name: "Рівень", value: levelsArr.join(""), inline: true },
-      { name: "XP", value: xpArr.join(""), inline: true }
+    .addFields(...fieldsArr)
+    .setThumbnail(
+      client.guilds.cache
+        .get(await usersData[0].guildId)
+        .iconURL({ dynamic: true })
     );
 
   return ratingEmbed;
