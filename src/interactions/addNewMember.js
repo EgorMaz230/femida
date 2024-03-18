@@ -1,24 +1,27 @@
 const { ReactionUserManager } = require("discord.js");
 const Level = require("../models/Level");
 
-module.exports = async(interaction, message, newState) => {
-    let currentUsers = null;
 
-    if (interaction) {
-        currentUsers = await Level.find({ userId: interaction.user.id });
-        if (currentUsers.length === 0) {
-            const newUser = new Level({
-                userId: interaction.user.id,
-                guildId: interaction.guild.id,
-                xp: 0,
-                currentXp: 0,
-                level: 1,
-            });
+module.exports = async (interaction, message, newState) => {
+  let currentUsers = null;
+  console.log(message);
+  if (interaction) {
 
-            await newUser.save();
-        }
-    } else if (message) {
-        currentUsers = await Level.find({ userId: message.author.id });
+    currentUsers = await Level.find({ userId: interaction.user.id });
+    if (currentUsers.length === 0) {
+      const newUser = new Level({
+        userId: interaction.user.id,
+        guildId: interaction.guild.id,
+        xp: 0,
+        currentXp: 0,
+        level: 1,
+      });
+
+      await newUser.save();
+    }
+  } else if (message) {
+    if(message.author.bot) return
+    currentUsers = await Level.find({ userId: message.author.id });
         if (currentUsers.length === 0) {
             const newUser = new Level({
                 userId: message.author.id,
