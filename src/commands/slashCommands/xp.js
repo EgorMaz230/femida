@@ -21,6 +21,33 @@ async function createRankCard(interaction, userObjDB) {
     .fetch(interaction.user.id)
     .then((userGuild) => (userGuildObj = userGuild));
   Font.loadDefault();
+  const curLevel = userObjDB.level
+  let prevLevel = 0
+  let prevNeededXp = 0 
+  let nowPrewLvl = 0
+  const neededXp = 5 * Math.pow(curLevel, 2) + 50 * curLevel + 100;
+  let xps = userObjDB.xp + userObjDB.currentXp
+  let curXps = userObjDB.xp + userObjDB.currentXp
+  
+  if (userObjDB.level !== 0){
+     while (prevNeededXp < xps) {
+       
+      prevNeededXp +=  5 * Math.pow(prevLevel, 2) + 50 * prevLevel + 100;
+
+      if(prevNeededXp <= xps){ 
+        nowPrewLvl += 5 * Math.pow(prevLevel, 2) + 50 * prevLevel + 100
+      }
+      ++prevLevel
+
+     }
+     if(nowPrewLvl === 0 && curLevel !== 0){
+      curXps = xps - 100
+     } else {
+      curXps = xps - nowPrewLvl
+     }
+  }
+
+  
   const rankCopy = new RankCardBuilder()
     .setAvatar(
       `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}.png?size=256`
@@ -32,8 +59,8 @@ async function createRankCard(interaction, userObjDB) {
     )
     .setUsername("@" + interaction.user.username)
     .setStatus(userGuildObj.presence?.status)
-    .setCurrentXP(userObjDB.xp)
-    .setRequiredXP(calculateXPForLevel(userObjDB.level + 1))
+    .setCurrentXP(curXps)
+    .setRequiredXP(neededXp)
     .setLevel(userObjDB.level);
   return rankCopy;
 }

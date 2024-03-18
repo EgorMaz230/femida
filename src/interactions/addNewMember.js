@@ -5,6 +5,7 @@ module.exports = async (interaction, message, newState) => {
   let currentUsers = null;
   console.log(message);
   if (interaction) {
+
     currentUsers = await Level.find({ userId: interaction.user.id });
     if (currentUsers.length === 0) {
       const newUser = new Level({
@@ -18,6 +19,7 @@ module.exports = async (interaction, message, newState) => {
       await newUser.save();
     }
   } else if (message) {
+    if(message.author.bot) return
     currentUsers = await Level.find({ userId: message.author.id });
     if (currentUsers.length === 0) {
       const newUser = new Level({
