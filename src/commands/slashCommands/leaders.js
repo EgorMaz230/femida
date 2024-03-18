@@ -10,23 +10,20 @@ module.exports = {
     await interaction.deferReply();
     const sendRatingFn = async () => {
       const ratingEmbed = await creatingRatingEmbed(client);
-      let attachment = new AttachmentBuilder(
-        "src/imgs/goiteens-logo.jpg",
-        "goiteens-logo.jpg"
-      );
+      let attachments = [];
       if (ratingEmbed.data.title === "Помилка") {
-        attachment = new AttachmentBuilder(
-          "src/imgs/catError.gif",
-          "catError.gif"
-        );
+        attachments = [
+          new AttachmentBuilder("src/imgs/catError.gif", "catError.gif"),
+        ];
+      } else {
+        ratingEmbed.data.title = "Рейтинг учасників серверу";
       }
-      ratingEmbed.data.title = "Рейтинг учасників серверу";
       await interaction
         .editReply({
-          files: [attachment],
+          files: attachments,
           embeds: [ratingEmbed],
         })
-        .catch((e) => console.log(e));
+        .catch((err) => console.log(err));
     };
     sendRatingFn();
   },

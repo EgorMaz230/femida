@@ -3,7 +3,7 @@ const messages = require("../models/messages.js");
 const antiSpam = require("../constants/antiSpam.js");
 const userMuteCooldowns = require("../constants/newMap.js");
 
-const userCooldowns = require("../constants/newMap.js")
+
 
 module.exports = async(message) => {
     // Отримання ідентифікатора користувача та тексту повідомлення
@@ -12,9 +12,8 @@ module.exports = async(message) => {
 
     try {
         // Отримання часу останнього повідомлення користувача
-        const lastMessageTime = userCooldowns.get(userId) || 0;
-        const currentTime = Date.now();
 
+        const currentTime = Date.now();
 
         // Збереження нового повідомлення в базі даних
         const newMessage = new messages({
@@ -24,9 +23,9 @@ module.exports = async(message) => {
         await newMessage.save();
 
         // Перевірка наявності користувача в списку cooldowns
-        if (!userCooldowns.has(userId)) {
+        if (!userMuteCooldowns.has(userId)) {
             // Додавання користувача до списку cooldowns та встановлення таймауту
-            userCooldowns.set(userId, currentTime);
+            userMuteCooldowns.set(userId, 0);
 
             setTimeout(async() => {
                 // Отримання кількості аналогічних повідомлень користувача
@@ -58,15 +57,26 @@ module.exports = async(message) => {
 
                 // Визначення дій в залежності від кількості аналогічних повідомлень
                 if (countOfSameMessages >= antiSpam.warnThreshold) {
+
                     if (countOfSameMessages >= antiSpam.muteTreshold) {
+                        // console.log(countOfSameMessages)
+                        // console.log(antiSpam.muteTreshold)
+
                         // Встановлення ролі "Muted" та часу мута
-                        const lastMuteTime = userMuteCooldowns.get(userId) || 0;
+                        const lastMuteTime = userMuteCooldowns.get(userId);
+                        console.log('userMuteCooldowns', userMuteCooldowns.get(userId));
                         const muteCooldown = 60 * 1000; // 1 хвилина
 
-                        if (currentTime - lastMuteTime > muteCooldown) {
+                        if ((currentTime) - lastMuteTime > muteCooldown) {
+                            console.log(Number(currentTime) - lastMuteTime, muteCooldown);
+                            console.log(' currentTime', currentTime);
+                            console.log('lastMuteTime', lastMuteTime);
+
                             const muteRole = message.guild.roles.cache.find(
-                                (role) => role.name === "Muted"
+                                (role) => role.id === "1211008108583850074"
+
                             );
+
                             if (muteRole) {
                                 const member = message.guild.members.cache.get(userId);
                                 if (member) {
@@ -75,7 +85,7 @@ module.exports = async(message) => {
                                         `<@${userId}> ${antiSpam.muteMessage}`
                                     );
 
-                                    userMuteCooldowns.set(userId, currentTime);
+                                    userMuteCooldowns.set(userId, Date.now());
 
                                     // Зняття ролі "Muted" після вказаного часу
                                     setTimeout(() => {
@@ -102,7 +112,7 @@ module.exports = async(message) => {
                 }
 
                 // Видалення користувача зі списку cooldowns
-                userCooldowns.delete(userId);
+                userMuteCooldowns.delete(userId);
             }, 1000);
         }
     } catch (error) {

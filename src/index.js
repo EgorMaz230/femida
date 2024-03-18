@@ -4,6 +4,7 @@ const {
   Partials,
   Events,
   Collection,
+  AuditLogEvent,
 } = require("discord.js");
 const { config } = require("dotenv");
 const path = require("node:path");
@@ -116,7 +117,7 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
 });
 
 client.on("messageDelete", async (msg) => {
-  whenMessageDelete(msg);
+  whenMessageDelete(msg, AuditLogEvent, client);
 });
 
 client.login(TOKEN);
