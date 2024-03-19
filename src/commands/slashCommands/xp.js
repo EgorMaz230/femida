@@ -21,33 +21,30 @@ async function createRankCard(interaction, userObjDB) {
     .fetch(interaction.user.id)
     .then((userGuild) => (userGuildObj = userGuild));
   Font.loadDefault();
-  const curLevel = userObjDB.level
-  let prevLevel = 0
-  let prevNeededXp = 0 
-  let nowPrewLvl = 0
+  const curLevel = userObjDB.level;
+  let prevLevel = 0;
+  let prevNeededXp = 0;
+  let nowPrewLvl = 0;
   const neededXp = 5 * Math.pow(curLevel, 2) + 50 * curLevel + 100;
-  let xps = userObjDB.xp + userObjDB.currentXp
-  let curXps = userObjDB.xp + userObjDB.currentXp
-  
-  if (userObjDB.level !== 0){
-     while (prevNeededXp < xps) {
-       
-      prevNeededXp +=  5 * Math.pow(prevLevel, 2) + 50 * prevLevel + 100;
+  let xps = userObjDB.xp + userObjDB.currentXp;
+  let curXps = userObjDB.xp + userObjDB.currentXp;
 
-      if(prevNeededXp <= xps){ 
-        nowPrewLvl += 5 * Math.pow(prevLevel, 2) + 50 * prevLevel + 100
+  if (userObjDB.level !== 0) {
+    while (prevNeededXp < xps) {
+      prevNeededXp += 5 * Math.pow(prevLevel, 2) + 50 * prevLevel + 100;
+
+      if (prevNeededXp <= xps) {
+        nowPrewLvl += 5 * Math.pow(prevLevel, 2) + 50 * prevLevel + 100;
       }
-      ++prevLevel
-
-     }
-     if(nowPrewLvl === 0 && curLevel !== 0){
-      curXps = xps - 100
-     } else {
-      curXps = xps - nowPrewLvl
-     }
+      ++prevLevel;
+    }
+    if (nowPrewLvl === 0 && curLevel !== 0) {
+      curXps = xps - 100;
+    } else {
+      curXps = xps - nowPrewLvl;
+    }
   }
 
-  
   const rankCopy = new RankCardBuilder()
     .setAvatar(
       `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}.png?size=256`
@@ -107,7 +104,7 @@ module.exports = {
 
     const rankCard = await createRankCard(targetUserObj, fetchedUser);
     rankCard.build().then(async (data) => {
-      const attachment = new AttachmentBuilder(data, "rankCard.png");
+      const attachment = new AttachmentBuilder(data, { name: "rankcard.png" });
       const xpEmbed = new EmbedBuilder()
         .setTitle(
           `Інформація про ${
@@ -119,20 +116,12 @@ module.exports = {
         .setDescription(
           `Використано добового ліміту XP  \`${fetchedUser.currentXp} / 150\``
         )
-        .setColor("White");
-      const msg = await interaction.channel.send({
-        files: [data],
-        fetchReply: true,
+        .setColor("White")
+        .setImage("attachment://rankcard.png");
+      await interaction.editReply({
+        embeds: [xpEmbed],
+        files: [attachment],
       });
-      const attachmentUrl = await msg.attachments.first().url;
-      await xpEmbed.setImage(attachmentUrl);
-      await interaction.channel.bulkDelete([msg]);
-      await interaction.editReply({ embeds: [xpEmbed] });
     });
-
-    if (!interaction.inGuild()) {
-      interaction.reply("You can't run this command inside a server");
-      return;
-    }
   },
 };
