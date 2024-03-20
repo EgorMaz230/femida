@@ -47,7 +47,9 @@ async function createRankCard(interaction, userObjDB) {
 
   const rankCopy = new RankCardBuilder()
     .setAvatar(
-      `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}.png?size=256`
+      interaction.user.avatar
+        ? `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}.png?size=256`
+        : "https://static-00.iconduck.com/assets.00/discord-icon-256x256-9xetatcg.png"
     )
     .setDisplayName(
       interaction.user.globalName
@@ -58,7 +60,13 @@ async function createRankCard(interaction, userObjDB) {
     .setStatus(userGuildObj.presence?.status)
     .setCurrentXP(curXps)
     .setRequiredXP(neededXp)
-    .setLevel(userObjDB.level);
+    .setLevel(userObjDB.xp)
+    .setRank(userObjDB.level);
+  rankCopy.setTextStyles({
+    level: "TOTAL XP :", // Custom text for the level
+    xp: "XP TO NEXT LEVEL :", // Custom text for the experience points
+    rank: "LEVEL :", // Custom text for the rank
+  });
   return rankCopy;
 }
 
@@ -74,54 +82,72 @@ module.exports = {
     ),
 
   async execute(interaction) {
-    if (!interaction.inGuild()) {
-      interaction.reply("You can't run this command inside a server");
-      return;
-    }
+    try {
+      if (!interaction.inGuild()) {
+        interaction.reply("You can't run this command inside a server");
+        return;
+      }
 
-    await interaction.deferReply();
+      await interaction.deferReply();
 
-    const mentionedUserId = interaction.options.get("target-user")?.value;
-    const targetUserId = mentionedUserId || interaction.member.id;
-    if (targetUserId === "1194725259446849647") {
-      interaction.editReply("Ти не можеш подивитись мій рівень😉");
-      return;
-    }
-    const targetUserObj = await interaction.guild.members.fetch(targetUserId);
-    const fetchedUser = await Level.findOne({
-      userId: targetUserId,
-      guildId: interaction.guild.id,
-    });
-    await updateLevel(fetchedUser, targetUserId);
-    if (!fetchedUser) {
-      interaction.editReply(
-        mentionedUserId
-          ? `${targetUserObj.user.tag} doesn't have any xp yet. Try again when they chat a little more`
-          : `You don't have any xp yet. Chat a little more and try again`
-      );
-      return;
-    }
-
-    const rankCard = await createRankCard(targetUserObj, fetchedUser);
-    rankCard.build().then(async (data) => {
-      const attachment = new AttachmentBuilder(data, { name: "rankcard.png" });
-      const xpEmbed = new EmbedBuilder()
-        .setTitle(
-          `Інформація про ${
-            targetUserObj.user.globalName
-              ? targetUserObj.user.globalName
-              : targetUserObj.user.username
-          }`
-        )
-        .setDescription(
-          `Використано добового ліміту XP  \`${fetchedUser.currentXp} / 150\``
-        )
-        .setColor("White")
-        .setImage("attachment://rankcard.png");
-      await interaction.editReply({
-        embeds: [xpEmbed],
-        files: [attachment],
+      const mentionedUserId = interaction.options.get("target-user")?.value;
+      const targetUserId = mentionedUserId || interaction.member.id;
+      if (targetUserId === "1194725259446849647") {
+        interaction.editReply("Ти не можеш подивитись мій рівень😉");
+        return;
+      }
+      const targetUserObj = await interaction.guild.members.fetch(targetUserId);
+      const fetchedUser = await Level.findOne({
+        userId: targetUserId,
+        guildId: interaction.guild.id,
       });
-    });
+      await updateLevel(fetchedUser, targetUserId);
+      if (!fetchedUser) {
+        interaction.editReply(
+          mentionedUserId
+            ? `${targetUserObj.user.tag} doesn't have any xp yet. Try again when they chat a little more`
+            : `You don't have any xp yet. Chat a little more and try again`
+        );
+        return;
+      }
+
+      const rankCard = await createRankCard(targetUserObj, fetchedUser);
+      console.log(rankCard);
+      rankCard.build().then(async (data) => {
+        const attachments = [
+          new AttachmentBuilder(data, {
+            name: "rankcard.png",
+          }),
+        ];
+        const xpEmbed = new EmbedBuilder()
+          .setTitle(
+            `Інформація про ${
+              targetUserObj.user.globalName
+                ? targetUserObj.user.globalName
+                : targetUserObj.user.username
+            }`
+          )
+          .setDescription(
+            `Використано добового ліміту XP  \`${fetchedUser.currentXp} / 150\``
+          )
+          .setColor("White")
+          .setImage("attachment://rankcard.png");
+
+        // if (!interaction.user.avatar) {
+        //   attachments.push(
+        //     new AttachmentBuilder("../../imgs/emptyAvatar.png", {
+        //       name: "emptyAvatar.png",
+        //     })
+        //   );
+        // }
+
+        await interaction.editReply({
+          embeds: [xpEmbed],
+          files: attachments,
+        });
+      });
+    } catch (err) {
+      console.log(err);
+    }
   },
 };
