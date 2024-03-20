@@ -5,7 +5,7 @@ module.exports = (id, amount) => {
     .exec()
     .then((op) => {
       if (op !== null) {
-        let exp = op.xp + amount;
+        let exp = op.currentXp + amount;
         Level.updateOne({ userId: id }, { xp: exp }).then();
       }
     });
