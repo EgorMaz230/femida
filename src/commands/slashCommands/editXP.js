@@ -44,7 +44,7 @@ module.exports = {
     );
 
     if (!hasAllowedRole) {
-      interaction.reply("You don't have permission to use this command.");
+      interaction.reply("Тільки адміністрація має право використовувати цю команду🙃");
       return;
     }
 

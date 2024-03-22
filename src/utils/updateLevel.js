@@ -17,4 +17,5 @@ module.exports = async function updateLevel({ level, xp }, userId) {
     newLevel++;
   }
   await Level.findOneAndUpdate({ userId: userId }, { level: newLevel });
+  return newLevel;
 };
