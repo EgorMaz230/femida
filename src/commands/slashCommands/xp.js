@@ -6,16 +6,14 @@ const {
 const Level = require("../../models/Level");
 const updateLevel = require("../../utils/updateLevel.js");
 const { RankCardBuilder, Font } = require("canvacord");
-
-function calculateXPForLevel(lvl) {
-  let xpForLevel = 0;
-  for (let i = 0; i < lvl; i++) {
-    xpForLevel += 5 * Math.pow(i, 2) + 50 * i + 100;
-  }
-  return xpForLevel;
-}
+const fs = require("node:fs");
 
 async function createRankCard(interaction, userObjDB) {
+  async function createEmptyAvatarBuffer() {
+    const promise = fs.promises.readFile("./src/imgs/emptyAvatar.png");
+    return await Promise.resolve(promise);
+  }
+
   let userGuildObj = {};
   await interaction.guild.members
     .fetch(interaction.user.id)
@@ -49,7 +47,7 @@ async function createRankCard(interaction, userObjDB) {
     .setAvatar(
       interaction.user.avatar
         ? `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}.png?size=256`
-        : "https://static-00.iconduck.com/assets.00/discord-icon-256x256-9xetatcg.png"
+        : await createEmptyAvatarBuffer()
     )
     .setDisplayName(
       interaction.user.globalName
@@ -63,9 +61,9 @@ async function createRankCard(interaction, userObjDB) {
     .setLevel(userObjDB.xp)
     .setRank(userObjDB.level);
   rankCopy.setTextStyles({
-    level: "TOTAL XP :", // Custom text for the level
-    xp: "XP TO NEXT LEVEL :", // Custom text for the experience points
-    rank: "LEVEL :", // Custom text for the rank
+    level: "TOTAL XP :",
+    xp: "XP TO NEXT LEVEL :",
+    rank: "LEVEL :",
   });
   return rankCopy;
 }
@@ -93,26 +91,27 @@ module.exports = {
       const mentionedUserId = interaction.options.get("target-user")?.value;
       const targetUserId = mentionedUserId || interaction.member.id;
       if (targetUserId === "1194725259446849647") {
-        interaction.editReply("Ти не можеш подивитись мій рівень😉");
+        await interaction.editReply("Ти не можеш подивитись мій рівень😉");
         return;
       }
       const targetUserObj = await interaction.guild.members.fetch(targetUserId);
-      const fetchedUser = await Level.findOne({
+      let fetchedUser = await Level.findOne({
         userId: targetUserId,
         guildId: interaction.guild.id,
       });
-      await updateLevel(fetchedUser, targetUserId);
       if (!fetchedUser) {
-        interaction.editReply(
-          mentionedUserId
-            ? `${targetUserObj.user.tag} doesn't have any xp yet. Try again when they chat a little more`
-            : `You don't have any xp yet. Chat a little more and try again`
-        );
-        return;
+        fetchedUser = {
+          userId: targetUserId,
+          guildId: interaction.guild.id,
+          xp: 0,
+          level: 0,
+          currentXp: 0,
+        };
+      } else {
+        fetchedUser.level = await updateLevel(fetchedUser, targetUserId);
       }
 
       const rankCard = await createRankCard(targetUserObj, fetchedUser);
-      console.log(rankCard);
       rankCard.build().then(async (data) => {
         const attachments = [
           new AttachmentBuilder(data, {
@@ -132,14 +131,6 @@ module.exports = {
           )
           .setColor("White")
           .setImage("attachment://rankcard.png");
-
-        // if (!interaction.user.avatar) {
-        //   attachments.push(
-        //     new AttachmentBuilder("../../imgs/emptyAvatar.png", {
-        //       name: "emptyAvatar.png",
-        //     })
-        //   );
-        // }
 
         await interaction.editReply({
           embeds: [xpEmbed],
