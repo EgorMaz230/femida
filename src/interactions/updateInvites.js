@@ -14,6 +14,7 @@ module.exports = async function updateInvites(person, client) {
   });
 
   let res = await person.guild.members.fetch();
+  
   function up() {
     res.forEach((member) => {
       if (!member.user.bot) {
@@ -25,8 +26,9 @@ module.exports = async function updateInvites(person, client) {
             global.tempObj[String(member.user.id)];
           const date = new Date();
           const month = (date.getFullYear() - member.joinedAt.getFullYear()) * 12 + date.getMonth();
-          if (member.joinedAt.getMonth() < month) {
+          if (member.joinedAt.getMonth() < month && global.userList[String(member.user.id)] > 0) {
             addPoints(member.user.id, 100);
+            global.userList[String(member.user.id)]--;
           }
           
         }
