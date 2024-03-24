@@ -28,12 +28,17 @@ module.exports = async function checkRoleInVc(oldState, newState, client) {
           const userIds = members.map((member) => member.user.id);
           userIds.forEach(async (user) => {
             const people = await Level.findOne({ userId: user });
-            const updateXp = people.currentXp + 30;
+            if (people.currentXp !== 150) {
+            let updateXp = people.currentXp + 30;
+            if(updateXp > 150) {
+              updateXp = 150
+            }
             await Level.findOneAndUpdate(
               { userId: user },
               { currentXp: updateXp }
             );
             await updateLevel(people, user);
+            }
           });
         } else {
           const userIds = members.map((member) => member.user.id);
@@ -47,13 +52,17 @@ module.exports = async function checkRoleInVc(oldState, newState, client) {
                 .roles.cache.has("953795856308510760")
             ) {
               const people = await Level.findOne({ userId: newState.id });
-              const updateXp = people.currentXp + 30;
+              if (people.currentXp !== 150) {
+              let updateXp = people.currentXp + 30;
+              if(updateXp > 150) {
+                updateXp = 150
+              }
               await Level.findOneAndUpdate(
                 { userId: newState.id },
                 { currentXp: updateXp }
               );
               await updateLevel(people, user);
-            }
+            }}
           });
         }
       }
