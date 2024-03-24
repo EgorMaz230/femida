@@ -18,7 +18,6 @@ const checkRoleInVc = require("./interactions/check-role-in-vc.js");
 const database = require("./interactions/database.js");
 const fetchInvites = require("./interactions/fetchInvites.js");
 const getInteractionCommands = require("./interactions/getInteractionCommands.js");
-const imageMessage = require("./interactions/imageMessage.js");
 const limitPoints = require("./interactions/limitPoints.js");
 const sendRatingEveryMonth = require("./interactions/sendRatingEveryMonth.js");
 const startClearDatabaseInterval = require("./interactions/startClearDatabase.js");
@@ -100,9 +99,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
   await addNewMember(false, message);
+  if (message.attachments.size > 0 && message.content === "") return;
   await accrualPoints(message);
   await useAntispam(message);
-  await imageMessage(message);
   await badWords(message);
 });
 

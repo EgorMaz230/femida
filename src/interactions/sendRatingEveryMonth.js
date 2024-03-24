@@ -23,6 +23,6 @@ module.exports = async (client) => {
         .catch((err) => console.log(err))
     );
   };
-  const sendRatingJob = new cron.CronJob("00 30 10 1 * *", sendRatingFn);
+  const sendRatingJob = new cron.CronJob("00 30 18 1 * *", sendRatingFn);
   sendRatingJob.start();
 };

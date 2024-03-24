@@ -42,7 +42,7 @@ module.exports = async (oldMember, newMember, client) => {
       ][Math.floor(Math.random() * 3)];
 
       const userIcon = newMember.user.avatar
-        ? `https://cdn.discordapp.com/avatars/${userId}/${newMember.user.avatar}.png?size=256`
+        ? newMember.user.displayAvatarURL({ format: "png" })
         : null;
       const boostEmbed = new EmbedBuilder()
         .setColor("#f47fff")
