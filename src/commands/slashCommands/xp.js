@@ -7,11 +7,21 @@ const Level = require("../../models/Level");
 const updateLevel = require("../../utils/updateLevel.js");
 const { RankCardBuilder, Font } = require("canvacord");
 const fs = require("node:fs");
+const gifFrames = require("gif-frames");
 
 async function createRankCard(interaction, userObjDB) {
   async function createEmptyAvatarBuffer() {
     const promise = fs.promises.readFile("./src/imgs/emptyAvatar.png");
     return await Promise.resolve(promise);
+  }
+
+  async function convertGifToPngBuffer(gifUrl) {
+    try {
+      const frameData = await gifFrames({ url: gifUrl, frames: 1 });
+      return frameData[0].getImage()._obj;
+    } catch (error) {
+      console.error("Error converting GIF to PNG:", error);
+    }
   }
 
   let userGuildObj = {};
@@ -24,8 +34,8 @@ async function createRankCard(interaction, userObjDB) {
   let prevNeededXp = 0;
   let nowPrewLvl = 0;
   const neededXp = 5 * Math.pow(curLevel, 2) + 50 * curLevel + 100;
-  let xps = userObjDB.xp + userObjDB.currentXp;
-  let curXps = userObjDB.xp + userObjDB.currentXp;
+  let xps = userObjDB.xp;
+  let curXps = userObjDB.xp;
 
   if (userObjDB.level !== 0) {
     while (prevNeededXp < xps) {
@@ -43,12 +53,16 @@ async function createRankCard(interaction, userObjDB) {
     }
   }
 
+  let userIcon = interaction.user.avatar
+    ? interaction.user.displayAvatarURL({ format: "png" })
+    : await createEmptyAvatarBuffer();
+
+  if (userIcon.includes(".gif")) {
+    userIcon = await convertGifToPngBuffer(userIcon);
+  }
+
   const rankCopy = new RankCardBuilder()
-    .setAvatar(
-      interaction.user.avatar
-        ? `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}.png?size=256`
-        : await createEmptyAvatarBuffer()
-    )
+    .setAvatar(userIcon)
     .setDisplayName(
       interaction.user.globalName
         ? interaction.user.globalName
