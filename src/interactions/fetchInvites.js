@@ -4,7 +4,7 @@ module.exports = async function fetchInvites(op, client) {
   global.mainObj = {};
   global.tempObj = {};
   global.userList = [];
-  const guild = op.guilds.cache.get("1192065857363394621");
+  const guild = op.guilds.cache.get("953708116611051600");
   let res = await guild.members.fetch();
   res.forEach((member) => {
     if (!member.user.bot) {
