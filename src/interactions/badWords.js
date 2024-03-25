@@ -1,5 +1,5 @@
 const badWords = require("../constants/badWords");
-const mutedRoleID = "1211008108583850074"; // ID ролі "Muted"
+const mutedRoleID = "1009795849049604117"; // ID ролі "Muted"
 const muteDuration = 60;
 
 
