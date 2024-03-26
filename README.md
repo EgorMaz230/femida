@@ -17,7 +17,7 @@
 <div>
     <h2 id="general-information">Основна інформація</h2>
 
-<img src="https://cdn.discordapp.com/avatars//67e01b864865bb1cf7cd0d2acb9356b2.png?size=256" align="right" vertical-align="center">
+<img src="./assets/femidaAvatar.png" align="right" vertical-align="center">
 
 <p style="font-size: 1.15em;">
 Femida - це бот який вміє виконувати адміністративні функції і має систему рівнів та XP, які нараховуються за спілкування на сервері. Зокрема мутити за спам та нецензурні слова, нараховувати XP за повідомлення, за участь у голосовому каналі, за буст серверу, за запрошення нового учасника серверу <i>(умова - Ви повинні бути на сервері більш ніж місяць)</i>, та навіть за участь у трибуні, все це в компетенції нашого боту.
@@ -164,6 +164,6 @@ Femida - це бот який вміє виконувати адміністра
      
 
 </div>
-<div><h3 align="right">Зроблено Morgana team з 💙</h3>
+<div><img src="./assets/teamAvatar.png" align="left" /><h3 align="right">Зроблено Morgana team з 💙</h3>
     <p align="right"><a href="https://github.com/EgorMaz230">EgorMaz230</a> <a href="https://github.com/Yorabest">Sophia</a> <a href="https://github.com/yasinskislava">yasinskislava</a> <a href="https://github.com/0qsenxx">0qsenxx</a> <a href="https://github.com/Vllaaddd">Vlad</a> <br> <a href="https://github.com/m1xture">m1xture</a> <a href="https://github.com/KirillProgrammerTop1gg">Gorbunov Kirill</a> <a href="https://github.com/snastia">snastia</a> <a href="https://github.com/Olexander1234">Olexander</a></p>
 </div>

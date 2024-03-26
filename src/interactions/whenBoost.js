@@ -16,14 +16,13 @@ module.exports = async (oldMember, newMember, client) => {
       //? Adding XP for boost
 
       let userData = await Level.findOne({ userId: userId });
-      console.log(userData);
 
-      if (userData === null) {
+      if (userData === null || userData === undefined) {
         userData = new Level({
           userId: userId,
           guildId: newMember.guild.id,
           xp: 0,
-          level: 1,
+          level: 0,
           currentXp: 0,
         });
 
@@ -42,7 +41,9 @@ module.exports = async (oldMember, newMember, client) => {
         "Несподіваний буст!",
       ][Math.floor(Math.random() * 3)];
 
-      const userIcon = `https://cdn.discordapp.com/avatars/${userId}/${newMember.user.avatar}.png?size=256`;
+      const userIcon = newMember.user.avatar
+        ? newMember.user.displayAvatarURL({ format: "png" })
+        : null;
       const boostEmbed = new EmbedBuilder()
         .setColor("#f47fff")
         .setTitle(titleChoose)
@@ -56,9 +57,13 @@ module.exports = async (oldMember, newMember, client) => {
         .setThumbnail(userIcon)
         .setTimestamp();
 
-      client.guilds.cache.first().systemChannel.send({
-        embeds: [boostEmbed],
-      });
+      client.channels.fetch("1050608203945234442").then((channel) =>
+        channel
+          .send({
+            embeds: [boostEmbed],
+          })
+          .catch((err) => console.log(err))
+      );
     }
   }
 };

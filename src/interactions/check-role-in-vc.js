@@ -21,13 +21,24 @@ module.exports = async function checkRoleInVc(oldState, newState, client) {
 
         const members = voiceChannel.members;
 
-        if (newState.member.roles.cache.has("1192066790717661245")) {
+        if (
+          newState.member.roles.cache.has("953717386224226385") ||
+          newState.member.roles.cache.has("953795856308510760")
+        ) {
           const userIds = members.map((member) => member.user.id);
           userIds.forEach(async (user) => {
             const people = await Level.findOne({ userId: user });
-            const updateXp = people.currentXp + 30;
-            await Level.findOneAndUpdate({ userId: user }, { currentXp: updateXp });
+            if (people.currentXp !== 150) {
+            let updateXp = people.currentXp + 30;
+            if(updateXp > 150) {
+              updateXp = 150
+            }
+            await Level.findOneAndUpdate(
+              { userId: user },
+              { currentXp: updateXp }
+            );
             await updateLevel(people, user);
+            }
           });
         } else {
           const userIds = members.map((member) => member.user.id);
@@ -35,16 +46,23 @@ module.exports = async function checkRoleInVc(oldState, newState, client) {
             if (
               voiceChannel.guild.members.cache
                 .get(user)
-                .roles.cache.has("1192066790717661245")
+                .roles.cache.has("953717386224226385") ||
+              voiceChannel.guild.members.cache
+                .get(user)
+                .roles.cache.has("953795856308510760")
             ) {
               const people = await Level.findOne({ userId: newState.id });
-              const updateXp = people.currentXp + 30;
+              if (people.currentXp !== 150) {
+              let updateXp = people.currentXp + 30;
+              if(updateXp > 150) {
+                updateXp = 150
+              }
               await Level.findOneAndUpdate(
                 { userId: newState.id },
                 { currentXp: updateXp }
               );
               await updateLevel(people, user);
-            }
+            }}
           });
         }
       }

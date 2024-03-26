@@ -6,16 +6,24 @@ const {
 const Level = require("../../models/Level");
 const updateLevel = require("../../utils/updateLevel.js");
 const { RankCardBuilder, Font } = require("canvacord");
-
-function calculateXPForLevel(lvl) {
-  let xpForLevel = 0;
-  for (let i = 0; i < lvl; i++) {
-    xpForLevel += 5 * Math.pow(i, 2) + 50 * i + 100;
-  }
-  return xpForLevel;
-}
+const fs = require("node:fs");
+const gifFrames = require("gif-frames");
 
 async function createRankCard(interaction, userObjDB) {
+  async function createEmptyAvatarBuffer() {
+    const promise = fs.promises.readFile("./src/imgs/emptyAvatar.png");
+    return await Promise.resolve(promise);
+  }
+
+  async function convertGifToPngBuffer(gifUrl) {
+    try {
+      const frameData = await gifFrames({ url: gifUrl, frames: 1 });
+      return frameData[0].getImage()._obj;
+    } catch (error) {
+      console.error("Error converting GIF to PNG:", error);
+    }
+  }
+
   let userGuildObj = {};
   await interaction.guild.members
     .fetch(interaction.user.id)
@@ -26,8 +34,8 @@ async function createRankCard(interaction, userObjDB) {
   let prevNeededXp = 0;
   let nowPrewLvl = 0;
   const neededXp = 5 * Math.pow(curLevel, 2) + 50 * curLevel + 100;
-  let xps = userObjDB.xp + userObjDB.currentXp;
-  let curXps = userObjDB.xp + userObjDB.currentXp;
+  let xps = userObjDB.xp;
+  let curXps = userObjDB.xp;
 
   if (userObjDB.level !== 0) {
     while (prevNeededXp < xps) {
@@ -45,10 +53,16 @@ async function createRankCard(interaction, userObjDB) {
     }
   }
 
+  let userIcon = interaction.user.avatar
+    ? interaction.user.displayAvatarURL({ format: "png" })
+    : await createEmptyAvatarBuffer();
+
+  if (userIcon.includes(".gif")) {
+    userIcon = await convertGifToPngBuffer(userIcon);
+  }
+
   const rankCopy = new RankCardBuilder()
-    .setAvatar(
-      `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}.png?size=256`
-    )
+    .setAvatar(userIcon)
     .setDisplayName(
       interaction.user.globalName
         ? interaction.user.globalName
@@ -58,7 +72,13 @@ async function createRankCard(interaction, userObjDB) {
     .setStatus(userGuildObj.presence?.status)
     .setCurrentXP(curXps)
     .setRequiredXP(neededXp)
-    .setLevel(userObjDB.level);
+    .setLevel(userObjDB.xp)
+    .setRank(userObjDB.level);
+  rankCopy.setTextStyles({
+    level: "TOTAL XP :",
+    xp: "XP TO NEXT LEVEL :",
+    rank: "LEVEL :",
+  });
   return rankCopy;
 }
 
@@ -74,54 +94,65 @@ module.exports = {
     ),
 
   async execute(interaction) {
-    if (!interaction.inGuild()) {
-      interaction.reply("You can't run this command inside a server");
-      return;
-    }
+    try {
+      if (!interaction.inGuild()) {
+        interaction.reply("You can't run this command inside a server");
+        return;
+      }
 
-    await interaction.deferReply();
+      await interaction.deferReply();
 
-    const mentionedUserId = interaction.options.get("target-user")?.value;
-    const targetUserId = mentionedUserId || interaction.member.id;
-    if (targetUserId === "1194725259446849647") {
-      interaction.editReply("Ти не можеш подивитись мій рівень😉");
-      return;
-    }
-    const targetUserObj = await interaction.guild.members.fetch(targetUserId);
-    const fetchedUser = await Level.findOne({
-      userId: targetUserId,
-      guildId: interaction.guild.id,
-    });
-    await updateLevel(fetchedUser, targetUserId);
-    if (!fetchedUser) {
-      interaction.editReply(
-        mentionedUserId
-          ? `${targetUserObj.user.tag} doesn't have any xp yet. Try again when they chat a little more`
-          : `You don't have any xp yet. Chat a little more and try again`
-      );
-      return;
-    }
-
-    const rankCard = await createRankCard(targetUserObj, fetchedUser);
-    rankCard.build().then(async (data) => {
-      const attachment = new AttachmentBuilder(data, { name: "rankcard.png" });
-      const xpEmbed = new EmbedBuilder()
-        .setTitle(
-          `Інформація про ${
-            targetUserObj.user.globalName
-              ? targetUserObj.user.globalName
-              : targetUserObj.user.username
-          }`
-        )
-        .setDescription(
-          `Використано добового ліміту XP  \`${fetchedUser.currentXp} / 150\``
-        )
-        .setColor("White")
-        .setImage("attachment://rankcard.png");
-      await interaction.editReply({
-        embeds: [xpEmbed],
-        files: [attachment],
+      const mentionedUserId = interaction.options.get("target-user")?.value;
+      const targetUserId = mentionedUserId || interaction.member.id;
+      if (targetUserId === "1194725259446849647") {
+        await interaction.editReply("Ти не можеш подивитись мій рівень😉");
+        return;
+      }
+      const targetUserObj = await interaction.guild.members.fetch(targetUserId);
+      let fetchedUser = await Level.findOne({
+        userId: targetUserId,
+        guildId: interaction.guild.id,
       });
-    });
+      if (!fetchedUser) {
+        fetchedUser = {
+          userId: targetUserId,
+          guildId: interaction.guild.id,
+          xp: 0,
+          level: 0,
+          currentXp: 0,
+        };
+      } else {
+        fetchedUser.level = await updateLevel(fetchedUser, targetUserId);
+      }
+
+      const rankCard = await createRankCard(targetUserObj, fetchedUser);
+      rankCard.build().then(async (data) => {
+        const attachments = [
+          new AttachmentBuilder(data, {
+            name: "rankcard.png",
+          }),
+        ];
+        const xpEmbed = new EmbedBuilder()
+          .setTitle(
+            `Інформація про ${
+              targetUserObj.user.globalName
+                ? targetUserObj.user.globalName
+                : targetUserObj.user.username
+            }`
+          )
+          .setDescription(
+            `Використано добового ліміту XP  \`${fetchedUser.currentXp} / 150\``
+          )
+          .setColor("White")
+          .setImage("attachment://rankcard.png");
+
+        await interaction.editReply({
+          embeds: [xpEmbed],
+          files: attachments,
+        });
+      });
+    } catch (err) {
+      console.log(err);
+    }
   },
 };
