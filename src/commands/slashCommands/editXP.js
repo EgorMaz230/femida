@@ -35,7 +35,7 @@ module.exports = {
       return;
     }
 
-    const allowedRoles = ["1199787784454553710", "1199788587718279179"];
+    const allowedRoles = ["953717386224226385", "953795856308510760"];
 
     const member = interaction.guild.members.cache.get(interaction.user.id);
 
