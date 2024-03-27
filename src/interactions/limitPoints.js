@@ -2,7 +2,7 @@ const Level = require("../models/Level");
 const cron = require("cron");
 
 module.exports = async () => {
-  const currentUsers = await Level.find();
+  const currentUsers = await Level.find({});
 
   function users() {
     currentUsers.map((currentUser) => {
