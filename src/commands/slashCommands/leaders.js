@@ -42,25 +42,29 @@ module.exports = {
       const usersIds = usersData.map((user) => user.userId);
       const usersObjs = await getUsersByIds(usersIds, client);
 
-      const usersArrEmbed = usersData.map((user) => {
-        const userName = usersObjs.find(
+      const usersArrEmbed = usersData.reduce((acc, user) => {
+        let userName = usersObjs.find(
           (userObj) => userObj.id === user.userId
-        ).displayName;
-        return {
-          name: userName,
-          __level: user.level,
-          __xp: user.xp,
-          inline: true,
-        };
-      });
+        );
+        !!userName ? userName = userName.displayName : null;
+        if (user.xp >= 5 && userName) {
+          acc.push({
+            name: userName,
+            __level: user.level,
+            __xp: user.xp,
+            inline: true,
+          });
+          
+        }
+        return acc;
+      }, []);
       const sortedUsersArrEmbed = usersArrEmbed
         .sort((firstUser, secondUser) => {
           if (firstUser.__level !== secondUser.__level) {
             return secondUser.__level - firstUser.__level;
           }
           return secondUser.__xp - firstUser.__xp;
-        })
-        .filter((user) => user.__xp >= 5 || user.__level > 1);
+        });
 
       if (sortedUsersArrEmbed.length === 0) {
         await sendError(
