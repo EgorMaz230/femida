@@ -96,14 +96,14 @@ module.exports = async (message) => {
               .exec()
               .then((op) => {
                 if (op !== null) {
-                  if (op.currentXp >= 5) {
-                    let exp = op.currentXp - 5;
+                  if (op.currentXp >= 2.5) {
+                    let exp = op.currentXp - 5 < 0 ? 0 : op.currentXp - 5;
                     Level.updateOne({ userId: id }, { currentXp: exp }).then();
                     return;
                   }
 
-                  if (op.xp >= 5) {
-                    let exp = op.xp - 5;
+                  if (op.xp >= 2.5) {
+                    let exp = op.xp - 5 < 0 ? 0 : op.xp - 5;
                     Level.updateOne({ userId: id }, { xp: exp }).then();
                     return;
                   }

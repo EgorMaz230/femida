@@ -5,14 +5,14 @@ module.exports = (id, amount) => {
     .exec()
     .then((op) => {
       if (op !== null) {
-        if (op.currentXp >= amount) {
-          const exp = op.currentXp - amount;
+        if (op.currentXp >= amount / 2) {
+          const exp = op.currentXp - amount < 0 ? 0 : op.currentXp - amount;
           Level.updateOne({ userId: id }, { currentXp: exp }).then();
           return;
         }
 
-        if (op.xp >= amount) {
-          const exp = op.xp - amount;
+        if (op.xp >= amount / 2) {
+          const exp = op.xp - amount < 0 ? 0 : op.xp - amount;
           Level.updateOne({ userId: id }, { xp: exp }).then();
           return;
         }
