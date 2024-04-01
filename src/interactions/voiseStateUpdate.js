@@ -7,11 +7,15 @@ module.exports = async (oldState, newState, client) => {
       const voiceChannels = client.channels.cache.filter(
         (elem) => elem.type === 2 || elem.type === 13
       );
-      const arrObj = [];
+      let stvoiceChannel = {};
+      await client.channels
+        .fetch(newState.channelId)
+        .then((channel) => (stvoiceChannel = channel))
+        .catch((err) => console.log(err));
 
-      voiceChannels.forEach((voiceChannel) => {
-        arrObj.push(voiceChannel.members);
-      });
+      const arrObj = stvoiceChannel.members;
+      const chanelMembers = arrObj.map((member) => member.user.id);
+
       async function fetchMembers() {
         let voiceChannel = {};
         await client.channels
@@ -25,33 +29,32 @@ module.exports = async (oldState, newState, client) => {
         userIds.forEach(async (user) => {
           const people = await Level.findOne({ userId: user });
           if (people.currentXp !== 150) {
-          let updateXp = people.currentXp + 20;
-          if(updateXp > 150) {
-            updateXp = 150
-          }
-          await Level.findOneAndUpdate({ userId: user }, { currentXp: updateXp });
-          await updateLevel(people, user);
-          // console.log("people", people);
+            let updateXp = people.currentXp + 20;
+            if (updateXp > 150) {
+              updateXp = 150;
+            }
+            await Level.findOneAndUpdate(
+              { userId: user },
+              { currentXp: updateXp }
+            );
+            await updateLevel(people, user);
+            // console.log("people", people);
           }
         });
       }
 
-      if (arrObj.length === 4) {
-        fetchMembers();
+      if (chanelMembers.length === 4) {
+        await fetchMembers();
       }
 
       if (arrObj.length > 4) {
         const people = await Level.findOne({ userId: newState.id });
         const updateXp = people.xp + 20;
-        await Level.findOneAndUpdate({ userId: newState.id }, { currentXp: updateXp });
-        if (people.xp >= 150) {
-          const updtaeLevel = people.level + 1;
-          const addXp = people.xp - 150;
-          await Level.findOneAndUpdate(
-            { userId: newState.id },
-            { level: updtaeLevel, xp: addXp }
-          );
-        }
+        await Level.findOneAndUpdate(
+          { userId: newState.id },
+          { currentXp: updateXp }
+        );
+        await updateLevel(people, newState.id);
       }
     }
   }

@@ -48,7 +48,7 @@ module.exports = async (oldMember, newMember, client) => {
         .setColor("#f47fff")
         .setTitle(titleChoose)
         .setDescription(
-          `<@${userId.toString()}> тільки що забустив/ла цей сервер!\nВам нараховано 50 XP. Дякуємо за підтримку💜`
+          `<@${userId.toString()}> тільки що забустив/ла цей сервер!\nВам нараховано 200 XP. Дякуємо за підтримку💜`
         )
         .setAuthor({
           name: newMember.user.username,
