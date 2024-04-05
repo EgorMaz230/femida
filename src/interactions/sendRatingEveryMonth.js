@@ -7,10 +7,9 @@ module.exports = async (client) => {
     const ratingEmbed = await creatingRatingEmbed(client);
     let attachments = [];
     if (ratingEmbed.data.title === "Помилка") {
-      attachments = [new AttachmentBuilder(
-        "src/imgs/catError.gif",
-        "catError.gif"
-      )];
+      attachments = [
+        new AttachmentBuilder("src/imgs/catError.gif", "catError.gif"),
+      ];
     } else {
       ratingEmbed.data.description = "Привітаємо переможців🥳";
     }
@@ -23,6 +22,11 @@ module.exports = async (client) => {
         .catch((err) => console.log(err))
     );
   };
-  const sendRatingJob = new cron.CronJob("00 30 18 1 * *", sendRatingFn);
-  sendRatingJob.start();
+  const sendRatingJob = new cron.CronJob(
+    "00 30 18 1 * *",
+    sendRatingFn,
+    null,
+    true,
+    "Europe/Kiev"
+  );
 };
