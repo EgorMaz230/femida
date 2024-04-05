@@ -35,7 +35,7 @@ module.exports = async (client) => {
     });
 
     if (sortedUsersArrEmbed.length > 10) {
-      sortedUsersArrEmbed.splice(9, sortedUsersArrEmbed.length - 9);
+      sortedUsersArrEmbed.splice(10, sortedUsersArrEmbed.length - 10);
     }
 
     if (sortedUsersArrEmbed.length === 0) {
