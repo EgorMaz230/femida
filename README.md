@@ -30,9 +30,9 @@ Femida - це бот який вміє виконувати адміністра
 <div>
     <h2 id="startBot">Як запустити бота?</h2>
     <p>Щоб виконати ці команди Вам необхідно мати встановлений <a href="https://git-scm.com/downloads">Git</a></p>
-    <code>git clone https://github.com/EgorMaz230/discord_bot_goIteens.git</code>
+    <code>git clone https://github.com/EgorMaz230/femida.git</code>
     <p>*Склонує цей репозиторій до вашого пристрою</p>
-<code>cd discord_bot_goIteens</code>
+<code>cd femida</code>
     <p>*Перейде в потрібну вам директорію <i>(папку)</i></p>
 <code>npm install</code>
     <p>*Встановить всі необхідні для роботи боту пакети</p>
