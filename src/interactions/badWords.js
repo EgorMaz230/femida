@@ -1,8 +1,8 @@
 const badWords = require("../constants/badWords");
 const mutedRoleID = "1222130994430349352"; // ID ролі "Muted" NEW
-// const mutedRoleID = "1211008108583850074"; // ID ролі "Muted" OLD
+const adminRoleID = "953717386224226385"; // Замінити на фактичний ID ролі адміністратора
+const moderRoleID = "953795856308510760"; // Замінити на фактичний ID ролі адміністратора
 const muteDuration = 60;
-
 
 // Мапа для зберігання кількості використань поганих слів кожним користувачем
 const warnedUsers = new Map();
@@ -13,6 +13,11 @@ module.exports = async (message) => {
   const guild = message.guild;
 
   try {
+    // Пропустити повідомлення від адміністратора
+    if (message.member.roles.cache.has(adminRoleID || moderRoleID)) {
+      return;
+    }
+
     // Якщо користувач є в списку використань поганих слів, збільшуємо лічильник
     if (warnedUsers.has(userId)) {
       warnedUsers.set(userId, warnedUsers.get(userId) + 1);
