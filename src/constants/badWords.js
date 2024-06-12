@@ -2,8 +2,6 @@ module.exports = [
   "аборт",
   "анальний",
   "анус",
-  
- 
   "мудак",
   "bad_word",
   "жопу",
@@ -17,7 +15,6 @@ module.exports = [
   "buceta",
   "килим muncher",
   "клітор",
-  "кун",
   "сперма",
   "cunillingus",
   "пизда",
