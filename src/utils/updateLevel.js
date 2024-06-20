@@ -1,5 +1,7 @@
 const { config } = require("dotenv");
 const Level = require("../models/Level");
+const sendLevelNotification = require("./sendLevelNotification");
+const sendDmMsg = require("./sendDmMsg");
 config();
 
 module.exports = async function updateLevel({ level, xp }, userId) {
@@ -19,23 +21,8 @@ module.exports = async function updateLevel({ level, xp }, userId) {
     newLevel++;
   }
   if (newLevel > level) {
-    try {
-      await fetch(
-        `https://discord.com/api/channels/1050608203945234442/messages`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            content: `<@${userId}> досяг ${newLevel} рівня. Вітаємо тебе!`,
-          }),
-          headers: {
-            "Content-Type": "application/json; charset=UTF-8",
-            "Authorization": `Bot ${process.env.TOKEN}`,
-          },
-        }
-      );
-    } catch (err) {
-      console.log("Discord API error" + " " + err);
-    }
+    await sendLevelNotification();
+    if (newLevel % 5 === 0) await sendDmMsg({ id: userId, level: newLevel });
   }
   await Level.findOneAndUpdate({ userId }, { level: newLevel });
   return newLevel;
