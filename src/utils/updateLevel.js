@@ -21,8 +21,9 @@ module.exports = async function updateLevel({ level, xp }, userId) {
     newLevel++;
   }
   if (newLevel > level) {
-    await sendLevelNotification();
-    if (newLevel % 5 === 0) await sendDmMsg({ id: userId, level: newLevel });
+    const params = { id: userId, level: newLevel };
+    await sendLevelNotification(params);
+    if (newLevel % 5 === 0) await sendDmMsg(params);
   }
   await Level.findOneAndUpdate({ userId }, { level: newLevel });
   return newLevel;
