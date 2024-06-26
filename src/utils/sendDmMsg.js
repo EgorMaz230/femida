@@ -1,11 +1,9 @@
 const { EmbedBuilder } = require("discord.js");
-const { config } = require("dotenv");
-config();
 
 module.exports = async function sendDmMsg({ id, level }) {
   async function getChannelId(userId) {
     try {
-      const resp = await await fetch(
+      const resp = await fetch(
         "https://discord.com/api/users/@me/channels",
         {
           method: "POST",
@@ -27,16 +25,14 @@ module.exports = async function sendDmMsg({ id, level }) {
   }
   async function sendMsgIntoChannel(channelId, msgContent) {
     try {
-      await await fetch(
-        `https://discord.com/api/channels/${channelId}/messages`,
-        {
-          method: "POST",
-          body: JSON.stringify(msgContent),
-          headers: {
-            "Content-Type": "application/json; charset=UTF-8",
-          },
-        }
-      );
+      await fetch(`https://discord.com/api/channels/${channelId}/messages`, {
+        method: "POST",
+        body: JSON.stringify(msgContent),
+        headers: {
+          "Content-Type": "application/json; charset=UTF-8",
+          Authorization: `Bot ${process.env.TOKEN}`,
+        },
+      });
     } catch (err) {
       console.log("Discord API: sending DM message failed: " + err);
     }
