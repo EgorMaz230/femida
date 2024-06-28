@@ -42,7 +42,7 @@ module.exports = async function sendDmMsg({ id, level }) {
         .setColor("#466f8f")
         .setTitle("Вітаю, ти досяг/ла нового ювілейного рівня - " + level)
         .setDescription(
-          "А це значить що ти маєш право на подарунок! Для того щоб його отримати напиши адміністрації серверу)"
+          "А це значить що ти маєш право на подарунок! Для того щоб його отримати напиши до адміністрації серверу)"
         )
         .setAuthor({ name: channel.recipients[0].username })
         .setTimestamp(),
