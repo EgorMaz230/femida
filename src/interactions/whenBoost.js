@@ -3,9 +3,6 @@ const updateLevel = require("../utils/updateLevel");
 const { EmbedBuilder } = require("discord.js");
 
 module.exports = async (oldMember, newMember, client) => {
-  console.log("old mem", oldMember.premiumSinceTimestamp);
-  console.log("newfag", newMember.premiumSinceTimestamp);
-
   if (oldMember.premiumSinceTimestamp || newMember.premiumSinceTimestamp) {
     if (
       (!oldMember.premiumSinceTimestamp && newMember.premiumSinceTimestamp) ||

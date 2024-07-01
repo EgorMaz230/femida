@@ -2,6 +2,7 @@ const { config } = require("dotenv");
 const Level = require("../models/Level");
 const sendLevelNotification = require("./sendLevelNotification");
 const sendDmMsg = require("./sendDmMsg");
+const addRoleLevel = require("./addRoleLevel");
 config();
 
 module.exports = async function updateLevel({ level, xp }, userId) {
@@ -23,7 +24,10 @@ module.exports = async function updateLevel({ level, xp }, userId) {
   if (newLevel > level) {
     const params = { id: userId, level: newLevel };
     await sendLevelNotification(params);
-    if (newLevel % 5 === 0) await sendDmMsg(params);
+    if (newLevel % 5 === 0 && newLevel !== 0) {
+      await sendDmMsg(params);
+      await addRoleLevel({ level: newLevel, xp }, userId);
+    }
   }
   await Level.findOneAndUpdate({ userId }, { level: newLevel });
   return newLevel;
