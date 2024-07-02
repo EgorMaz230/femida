@@ -73,7 +73,7 @@ config();
 
 client.on("ready", async (op) => {
   database(client);
-  fetchInvites(op, client);
+  // fetchInvites(op, client);
 });
 
 limitPoints();

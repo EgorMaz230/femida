@@ -29,15 +29,15 @@ module.exports = async function checkRoleInVc(oldState, newState, client) {
           userIds.forEach(async (user) => {
             const people = await Level.findOne({ userId: user });
             if (people.currentXp !== 150) {
-            let updateXp = people.currentXp + 30;
-            if(updateXp > 150) {
-              updateXp = 150
-            }
-            await Level.findOneAndUpdate(
-              { userId: user },
-              { currentXp: updateXp }
-            );
-            await updateLevel(people, user);
+              let updateXp = people.currentXp + 30;
+              if (updateXp > 150) {
+                updateXp = 150;
+              }
+              await Level.findOneAndUpdate(
+                { userId: user },
+                { currentXp: updateXp }
+              );
+              await updateLevel(people, user);
             }
           });
         } else {
@@ -53,20 +53,55 @@ module.exports = async function checkRoleInVc(oldState, newState, client) {
             ) {
               const people = await Level.findOne({ userId: newState.id });
               if (people.currentXp !== 150) {
-              let updateXp = people.currentXp + 30;
-              if(updateXp > 150) {
-                updateXp = 150
+                let updateXp = people.currentXp + 30;
+                if (updateXp > 150) {
+                  updateXp = 150;
+                }
+                await Level.findOneAndUpdate(
+                  { userId: newState.id },
+                  { currentXp: updateXp }
+                );
+                await updateLevel(people, user);
+              }
+            }
+          });
+        }
+      }
+      fetchMembers();
+      setInterval(async () => {
+        let voiceChannel = {};
+        await client.channels
+          .fetch(newState.channelId)
+          .then((channel) => (voiceChannel = channel))
+          .catch((err) => console.log(err));
+
+        const members = voiceChannel.members;
+        const userIds = members.map((member) => member.user.id);
+        // console.log(userIds);
+        userIds.forEach(async (user) => {
+          if (
+            voiceChannel.guild.members.cache
+              .get(user)
+              .roles.cache.has("953717386224226385") ||
+            voiceChannel.guild.members.cache
+              .get(user)
+              .roles.cache.has("953795856308510760")
+          ) {
+            const people = await Level.findOne({ userId: newState.id });
+            if (people.currentXp !== 150) {
+              let updateXp = people.currentXp + 10;
+              if (updateXp > 150) {
+                updateXp = 150;
               }
               await Level.findOneAndUpdate(
                 { userId: newState.id },
                 { currentXp: updateXp }
               );
               await updateLevel(people, user);
-            }}
-          });
-        }
-      }
-      fetchMembers();
+            }
+          }
+        });
+      }, 600000);
     }
   }
 };
