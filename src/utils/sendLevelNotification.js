@@ -1,19 +1,9 @@
+const main = require("../index");
 module.exports = async function sendLevelNotification({ id, level }) {
   try {
-    await fetch(
-      `https://discord.com/api/channels/1050608203945234442/messages`,
-      {
-        method: "POST",
-        body: JSON.stringify({
-          content: `<@${id}> досяг ${level} рівня. Вітаємо тебе!`,
-        }),
-        headers: {
-          "Content-Type": "application/json; charset=UTF-8",
-          Authorization: `Bot ${process.env.TOKEN}`,
-        },
-      }
-    );
+    const channel = await main.client.channels.fetch("1050608203945234442");
+    channel.send({ content: `<@${id}> досяг ${level} рівня. Вітаємо тебе!` });
   } catch (err) {
-    console.log("Discord API error" + " " + err);
+    console.log("Error while sending level msg into public channel " + err);
   }
 };

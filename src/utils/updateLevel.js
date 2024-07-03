@@ -1,9 +1,7 @@
-const { config } = require("dotenv");
 const Level = require("../models/Level");
 const sendLevelNotification = require("./sendLevelNotification");
 const sendDmMsg = require("./sendDmMsg");
 const addRoleLevel = require("./addRoleLevel");
-config();
 
 module.exports = async function updateLevel({ level, xp }, userId) {
   let xpForCurrentLvl = 0;
