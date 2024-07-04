@@ -120,3 +120,5 @@ client.on("messageDelete", async (msg) => {
 });
 
 client.login(TOKEN);
+
+module.exports.client = client;
